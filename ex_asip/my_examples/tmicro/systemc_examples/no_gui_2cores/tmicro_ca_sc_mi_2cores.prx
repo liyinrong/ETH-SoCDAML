@@ -1,0 +1,25 @@
+<simulator name="Simulator" processor="tmicro" mode="ca" lib="../../lib">
+    <option id="checkers.ArgcArgv" value="on"/>
+    <option id="checkers.BreakpointType" value="all"/>
+    <option id="checkers.ColorStorageReadsWrites" value="all"/>
+    <option id="checkers.CycleBasedFileInput" value="on"/>
+    <option id="checkers.ExtraCFiles" value="scmain_2cores.c" inherit="1"/>
+    <option id="checkers.ExtraIncDirs" value="{$(OSCI_DIR)/include}" inherit="1"/>
+    <option id="checkers.ExtraLibraries" value="{$(OSCI_DIR)/lib-linux64/libsystemc.a}" inherit="1"/>
+    <option id="checkers.FileInputType" value="all"/>
+    <option id="checkers.FileOutputType" value="all"/>
+    <option id="checkers.GenerateSystemCInterface" value="on"/>
+    <option id="checkers.HostedClib" value="on"/>
+    <option id="checkers.IssName" value="tmicro_ca_sc_mi_2cores"/>
+    <option id="checkers.nMLMemoryInterfaceSelectStorages" value="all"/>
+    <option id="checkers.NoMain" value="on"/>
+    <option id="checkers.NoTclTuiLibs" value="on"/>
+    <option id="checkers.PipelineDepth" value="6"/>
+    <option id="checkers.Profile" value="on"/>
+    <option id="checkers.ProfileStorageType" value="mem"/>
+    <option id="checkers.SystemCModelSimTestbench" value="on"/>
+    <option id="checkers.TraceExecution" value="on"/>
+    <option id="checkers.VhdlVerilogComparison" value="on"/>
+    <option id="checkers.WatchpointType" value="all"/>
+    <option id="checkers.WorkDir" value="tmicro_ca_sc_mi_2cores_work"/>
+</simulator>

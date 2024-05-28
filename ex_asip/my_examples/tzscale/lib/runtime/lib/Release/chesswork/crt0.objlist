@@ -1,0 +1,3 @@
+crt0-_fini_.o
+crt0-_start_.o
+crt0.gvt.o

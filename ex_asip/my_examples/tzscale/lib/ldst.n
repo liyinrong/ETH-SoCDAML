@@ -1,0 +1,80 @@
+/*
+-- File : ldst.n  
+--
+-- Contents : nML model for the Tzscale processor -- load/store instructions.
+--
+-- Copyright (c) 2015-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+
+opn load_store_instr( load | store );
+
+fu lx;  // load extend unit
+trn lxB<w08>; 
+trn lxH<w16>; 
+trn lxC<w32>; 
+
+fu sx;  // store extract unit
+trn sxB<w08>; 
+trn sxH<w16>; 
+trn sxW<w32>; 
+
+opn load(op: funct3_lb, rd: mR1, rs1: mR1, i: c12s) 
+{
+    action {
+    stage DE:
+        dm_addr = aluC = add(aluA=rs1,aluB=i) @alu; 
+    stage DE..WB:
+	switch (op) {
+	case lb : stage DE..WB: dmb_rd`WB` = DMb[dm_addr`DE`]`WB`;
+	          stage WB:     rd = lxC = extend_sign(lxB=dmb_rd) @lx;
+	case lbu: stage DE..WB: dmb_rd`WB` = DMb[dm_addr`DE`]`WB`;
+	          stage WB:     rd = lxC = extend_zero(lxB=dmb_rd) @lx;
+	case lh : stage DE..WB: dmh_rd`WB` = DMh[dm_addr`DE`]`WB`;
+	          stage WB:     rd = lxC = extend_sign(lxH=dmh_rd) @lx;
+	case lhu: stage DE..WB: dmh_rd`WB` = DMh[dm_addr`DE`]`WB`;
+	          stage WB:     rd = lxC = extend_zero(lxH=dmh_rd) @lx;
+	case lw : stage DE..WB: dmw_rd`WB` = DMw[dm_addr`DE`]`WB`;
+	          stage WB:     rd = lxC = dmw_rd;
+	}
+    }
+    syntax: op " " rd "," i "(" rs1 ")"; 
+    image : i::rs1::op::rd::opc.mem_ld_e;
+}
+
+opn store(op: funct3_sb, rs2: mR2, rs1: mR1, i: c12s)
+{
+    action {
+    stage DE:
+        dm_addr = aluC = add(aluA=rs1,aluB=i) @alu; 
+	switch (op) {
+	case sb: dmb_wr = sxB = extract_w08(sxW=rs2) @sx;
+                 DMb[dm_addr] = dmb_wr;
+	case sh: dmh_wr = sxH = extract_w16(sxW=rs2) @sx;
+                 DMh[dm_addr] = dmh_wr;
+	case sw: dmw_wr = rs2;
+                 DMw[dm_addr] = dmw_wr;
+        }
+    }
+    syntax : op " " rs2 "," i "(" rs1 ")";
+    image  : i[11..5]::rs2::rs1::op::i[4..0]::opc.mem_st_e;
+}
+
+chess_view () {  // indirect addressing
+    aluC = add(aluA,aluB=0);
+} -> {
+    aluC = aluA;
+}
+
+chess_view () {  // direct addressing
+    aluC = add(aluA=0,aluB);
+} -> {
+    aluC = aluB;
+}

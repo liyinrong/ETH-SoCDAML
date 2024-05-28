@@ -1,0 +1,370 @@
+/*
+-- File : bits16.n  
+--
+-- Contents : nML model for the Tzscale processor -- 16 bit instructions.
+--
+-- Copyright (c) 2015-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+opn c0(addi4spn | lw_16 | sw_16 );
+opn c1(nop | addi_16 | jal_16 | j_16 | addi16sp | srli_16 | srai_16 | andi_16 | sub_16 | 
+       xor_16 | or_16 | and_16 | beqz_16 | bnez_16);
+opn c2(slli_16 | lwsp | swsp | mv | add_16 | jalr_16 );
+
+trn of12<int12s2>;
+trn cw32<w32>;
+
+cst c10unz4<uint10nz4>;
+cst c6u_1_31<uint6_1_31>;
+cst c6n<int6n>;
+cst c6p<int6p>;
+cst c7u4  <uint7s4>;
+cst c8u4  <uint8s4>;
+cst c9s2  <int9s2>;
+cst c10ns16<int10ns16>;
+cst c10ps16<int10ps16>;
+cst c12s2 <int12s2>;
+
+
+mode mint6n(c: c6n) { 
+    read_value: cw32; 
+    read_action: cw32 = c; 
+    syntax: c;  
+    image: c[4..0]; 
+    image: c[5]; 
+} 
+
+mode mint6p(c: c6p) { 
+    read_value: cw32; 
+    read_action: cw32 = c; 
+    syntax: c;  
+    image: c[4..0]; 
+    image: c[5]; 
+} 
+
+mode cint6(mint6n | mint6p) { 
+    image: mint6n.0 | mint6p.0; 
+    image: mint6n.1 | mint6p.1; 
+}
+
+mode m10ns16(c: c10ns16) { 
+    read_value: cw32; 
+    read_action: cw32 = c; 
+    syntax: c;  
+    image: c[9]; 
+    image: c[4 zero];  
+    image: c[6];  
+    image: c[8..7];  
+    image: c[5];
+} 
+
+mode m10ps16(c: c10ps16) { 
+    read_value: cw32; 
+    read_action: cw32 = c; 
+    syntax: c;  
+    image: c[9]; 
+    image: c[4 zero]; 
+    image: c[6]; 
+    image: c[8..7]; 
+    image: c[5]; 
+} 
+
+mode m10nzs16(m10ns16 | m10ps16) { 
+    image: m10ns16.0 | m10ps16.0; 
+    image: m10ns16.1 | m10ps16.1; 
+    image: m10ns16.2 | m10ps16.2; 
+    image: m10ns16.3 | m10ps16.3; 
+    image: m10ns16.4 | m10ps16.4;
+}
+
+opn addi4spn(rd: mR1C, i: c10unz4)
+{
+    action {
+    stage DE:
+        aluC = add (aluA=r1=R[2],aluB=i) @alu; 	
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "addi4spn " rd ", " i;
+    image  :  "000"::i[9..2 zero]::rd::opc16.c0;
+} 
+
+opn lw_16(rd: mR1C, rs1: mR1C, i: c7u4)
+{
+    action {
+    stage DE:     dm_addr = aluC = add(aluA=rs1,aluB=i) @alu;             
+    stage DE..WB: dmw_rd`WB` = DMw[dm_addr`DE`]`WB`;
+    stage WB:     rd = lxC = dmw_rd;
+    }
+    syntax : "lw " rd ", " i "(" rs1 ")";  
+    image  :  "010"::i[2 zero]::rs1::i[6..3]::rd::opc16.c0;
+}
+
+opn sw_16(rs2: mR2C, rs1: mR1C, i: c7u4)
+{
+    action {
+    stage DE:
+        dm_addr = aluC = add(aluA=rs1,aluB=i) @alu; 
+        dmw_wr = rs2;
+        DMw[dm_addr] = dmw_wr;
+    }
+    syntax : "sw " rs2 ", " i "(" rs1 ")";
+    image  :  "110"::i[2 zero]::rs1::i[6..3]::rs2::opc16.c0;
+}
+
+opn nop()
+{
+    action {  stage DE:  nop(); }  
+    syntax : "nop";
+    image  :  "00"::"0000"::"0000"::"0000"::opc16.c1;
+}
+
+opn addi_16(rd: mR1nz, i: cint6)
+{
+    action {
+    stage DE:     
+        aluC = add(aluA=rd,aluB=i) @alu;             
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "addi " rd ", " i;  
+    image  :  "000"::i.0::rd::i.1::opc16.c1;  
+}
+
+opn jal_16(i: c12s2) 
+{
+    action { 
+    stage DE: 
+	PD = lnk = jal(of21=of12=i); 
+    stage WB:
+        LR = lrw = PD;
+    }
+    syntax : "jal " dec i;
+    image  : "001"::i[5]::i[3..1 zero]::i[7]::i[6]::i[10]::i[9..8]::
+               i[4]::i[11]::opc16.c1,
+             cycles(2), chess_pc_offset(1), class(ctrl);
+}
+
+opn j_16(i: c12s2) 
+{
+    action { 
+    stage DE: 
+	j(of21=of12=i); 
+    }
+    syntax : "j " dec i;
+    image  : "101"::i[5]::i[3..1 zero]::i[7]::i[6]::i[10]::i[9..8]::
+              i[4]::i[11]::opc16.c1,
+             cycles(2), chess_pc_offset(1), class(ctrl);
+}
+
+
+opn addi16sp(i: m10nzs16)
+{
+    action {
+    stage DE:     
+        aluC = add(aluA=r1=R[2],aluB=i) @alu;             
+        PD = aluC;
+    stage WB:
+        R[2] = w1 = PD;
+    }
+    syntax : "addi16sp " i;  
+    image    :  "011"::i.4::i.3::i.2::i.1::"00010"::i.0::opc16.c1;
+}
+
+opn srli_16(rd: mR1C, i: c6u_1_31)
+{
+    action {
+    stage DE:
+	shC  = srl ( shA=rd, shB=i)  @sh;
+        PD = shC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "srli " rd ", " i;  
+    image  :  "100"::i[5]::"00"::rd::i[4..0]::opc16.c1;
+}
+
+opn srai_16(  rd:mR1C, i:c6u_1_31)
+{
+    action {
+    stage DE:
+	shC  = sra ( shA=rd, shB=i)  @sh;
+        PD = shC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "srai " rd ", " i;  
+    image  :  "100"::i[5]::"01"::rd::i[4..0]::opc16.c1;
+}
+
+
+opn andi_16(rd: mR1C, i: c6s)
+{
+    action {
+    stage DE:     
+        aluC = band(aluA=rd,aluB=i) @alu;             
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "andi " rd ", " i;  
+    image  :  "100"::i[5]::"10"::rd::i[4..0]::opc16.c1;
+}
+
+opn sub_16(rd: mR1C, rs2: mR2C)
+{
+    action {
+    stage DE:     
+        aluC = sub(aluA=rd,aluB=rs2) @alu;             
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "sub " rd ", " rs2;  
+    image  :  "100"::"0"::"11"::rd::"00"::rs2::opc16.c1;
+}
+
+opn xor_16(rd: mR1C, rs2: mR2C)
+{
+    action {
+    stage DE:     
+        aluC = bxor(aluA=rd,aluB=rs2) @alu;             
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "xor " rd ", " rs2;  
+    image  :  "100"::"0"::"11"::rd::"01"::rs2::opc16.c1;
+}
+
+opn or_16(rd: mR1C, rs2: mR2C)
+{
+    action {
+    stage DE:     
+        aluC = bor(aluA=rd,aluB=rs2) @alu;             
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "or " rd ", " rs2;  
+    image  :  "100"::"0"::"11"::rd::"10"::rs2::opc16.c1;
+}
+
+opn and_16(rd: mR1C, rs2: mR2C)
+{
+    action {
+    stage DE:     
+        aluC = band(aluA=rd,aluB=rs2) @alu;             
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "and " rd ", " rs2;  
+    image  :  "100"::"0"::"11"::rd::"11"::rs2::opc16.c1;
+}
+
+opn beqz_16(rs1: mR1C, i: c9s2)
+{
+    action {
+    stage DE:
+        cnd = eq(eqA=rs1,eqB=0) @eq; 
+        br(cnd,of21_cd=i);
+    }
+    syntax : "beqz " rs1 "," i;
+    image  : "110"::i[8]::i[4..3]::rs1::i[7..6]::i[2..1 zero]::i[5]::opc16.c1,
+             cycles(2|1), chess_pc_offset(1), class(ctrl);
+}
+
+opn bnez_16(rs1: mR1C, i: c9s2)
+{
+    action {
+    stage DE:
+        cnd = ne(eqA=rs1,eqB=0) @eq; 
+        br(cnd,of21_cd=i);
+    }
+    syntax : "bnez " rs1 "," i;
+    image    : "111"::i[8]::i[4..3]::rs1::i[7..6]::i[2..1 zero]::i[5]::opc16.c1,
+             cycles(2|1), chess_pc_offset(1), class(ctrl);
+}
+
+opn slli_16(rd: mR1nz, i: c6u_1_31)
+{
+    action {
+    stage DE:
+        shC  = sll ( shA=rd, shB=i)  @sh;
+        PD = shC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "slli " rd ", " i;  
+    image  :  "000"::i[5]::rd::i[4..0]::opc16.c2;
+}
+
+opn lwsp( rd:mR1nz , i:c8u4)
+{
+    action {
+    stage DE:     dm_addr = aluC = add(aluA=r1=R[2],aluB=i) @alu;             
+    stage DE..WB: dmw_rd`WB` = DMw[dm_addr`DE`]`WB`;
+    stage WB:     rd = lxC = dmw_rd;
+    }
+    syntax : "lwsp " rd ", " i;  
+    image  :  "010"::i[5]::rd::i[4..2 zero]::i[7..6]::opc16.c2;
+}
+
+opn mv(rd: mR1nz, rs2: mR2nz)
+{
+    action { 
+    stage DE:     
+        aluC = add(aluA=0,aluB=rs2) @alu;             
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "mv " rd ", " rs2;  
+    image  :  "100"::"0"::rd::rs2::opc16.c2;
+}
+
+opn add_16(rd: mR1nz,rs2: mR2nz)
+{
+    action {
+    stage DE:     
+        aluC = add(aluA=rd,aluB=rs2) @alu;             
+        PD = aluC;
+    stage WB:
+        rd = PD;
+    }
+    syntax : "add " rd ", " rs2;  
+    image  :  "100"::"1"::rd::rs2::opc16.c2;
+}
+
+opn swsp(rs2: mR2, i: c8u4)
+{
+    action {
+    stage DE:     
+        dm_addr = aluC = add(aluA=r1=R[2],aluB=i) @alu;
+    	dmw_wr = rs2;
+        DMw[dm_addr] = dmw_wr;
+    }
+    syntax : "swsp " rs2 ", " i;  
+    image  :  "110"::i[5..2 zero]::i[7..6]::rs2::opc16.c2;
+}
+
+opn jalr_16(rs1: mR1nz )
+{
+    action {
+    stage DE:
+        PD = lnk = jalr(trgt=rs1);
+    stage WB:
+        LR = lrw = PD;
+    }
+    syntax : "jalr " rs1;
+    image  :  "100"::"1"::rs1::"00000"::opc16.c2, cycles(2), class(ctrl); 
+}

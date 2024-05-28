@@ -1,0 +1,9 @@
+<project name="Project" processor="tmicro" lib="../lib">
+    <file type="c" name="sort.c" path=""/>
+    <option id="project.name" value="sort"/>
+    <option id="project.type" value="exe"/>
+    <option id="simrun.serverport" value="5456"/>
+    <option id="darts.dis.format" value="lst"/>
+    <option id="darts.dis.radix" value="hex"/>
+    <option id="simrun.simscript" value="../bin/iss_rcd.tcl"/>
+</project>

@@ -1,0 +1,70 @@
+<project name="Project" processor="tmicro" lib="..">
+    <file type="c" name="shl_i32.c" path=""/>
+    <file type="c" name="sdiv_i32.c" path=""/>
+    <!--<file type="c" name="mul_i32.c" path=""/> -->
+    <file type="c" name="udiv_i32.c" path=""/>
+    <file type="c" name="srl_i32.c" path=""/>
+    <file type="c" name="sdivrem_i32.c" path=""/>
+    <file type="c" name="urem_i32.c" path=""/>
+    <file type="c" name="udivrem_i32.c" path=""/>
+    <file type="c" name="sra_i32.c" path=""/>
+    <file type="c" name="srem_i32.c" path=""/>
+    <file type="c" name="shl_i64.c" path=""/>
+    <file type="c" name="sdiv_i64.c" path=""/>
+    <file type="c" name="mul_i64.c" path=""/>
+    <file type="c" name="udiv_i64.c" path=""/>
+    <file type="c" name="srl_i64.c" path=""/>
+    <file type="c" name="sdivrem_i64.c" path=""/>
+    <file type="c" name="urem_i64.c" path=""/>
+    <file type="c" name="udivrem_i64.c" path=""/>
+    <file type="c" name="sra_i64.c" path=""/>
+    <file type="c" name="srem_i64.c" path=""/>
+    <file type="c" name="mulo_i16.c" path=""/>
+    <file type="c" name="mulo_i32.c" path=""/>
+    <file type="c" name="mulo_i64.c" path=""/>
+    <file type="c" name="addsf3.c" path=""/>
+    <file type="c" name="adddf3.c" path=""/>
+    <file type="c" name="subsf3.c" path=""/>
+    <file type="c" name="subdf3.c" path=""/>
+    <file type="c" name="mulsf3.c" path=""/>
+    <file type="c" name="muldf3.c" path=""/>
+    <file type="c" name="divsf3.c" path=""/>
+    <file type="c" name="divdf3.c" path=""/>
+    <file type="c" name="powisf2.c" path=""/>
+    <file type="c" name="powidf2.c" path=""/>
+    <file type="c" name="extendsfdf2.c" path=""/>
+    <file type="c" name="truncdfsf2.c" path=""/>
+    <file type="c" name="comparesf2.c" path=""/>
+    <file type="c" name="comparedf2.c" path=""/>
+    <file type="c" name="uinttofp_i64_f32.c" path=""/>
+    <file type="c" name="uinttofp_i64_f64.c" path=""/>
+    <file type="c" name="sinttofp_i64_f32.c" path=""/>
+    <file type="c" name="sinttofp_i64_f64.c" path=""/>
+    <file type="c" name="fptosint_f32_i16.c" path=""/>
+    <file type="c" name="sinttofp_i16_f32.c" path=""/>
+    <file type="c" name="fptouint_f32_i16.c" path=""/>
+    <file type="c" name="uinttofp_i16_f64.c" path=""/>
+    <file type="c" name="sinttofp_i16_f64.c" path=""/>
+    <file type="c" name="uinttofp_i16_f32.c" path=""/>
+    <file type="c" name="fptouint_f64_i16.c" path=""/>
+    <file type="c" name="fptosint_f64_i16.c" path=""/>
+    <file type="c" name="fptosint_f32_i32.c" path=""/>
+    <file type="c" name="sinttofp_i32_f32.c" path=""/>
+    <file type="c" name="fptouint_f32_i32.c" path=""/>
+    <file type="c" name="uinttofp_i32_f64.c" path=""/>
+    <file type="c" name="sinttofp_i32_f64.c" path=""/>
+    <file type="c" name="uinttofp_i32_f32.c" path=""/>
+    <file type="c" name="fptouint_f64_i32.c" path=""/>
+    <file type="c" name="fptosint_f64_i32.c" path=""/>
+    <file type="c" name="fptosint_f32_i64.c" path=""/>
+    <file type="c" name="fptouint_f32_i64.c" path=""/>
+    <file type="c" name="fptouint_f64_i64.c" path=""/>
+    <file type="c" name="fptosint_f64_i64.c" path=""/>
+    <option id="cpp.define" value="__SOFT_FP__" inherit="1"/>
+    <option id="cpp.include" value="../../../libs/compiler-rt-6.0.0/lib/builtins" inherit="1"/>
+    <option id="llvm.clang" value="on"/>
+    <option id="llvm.lang" value="ext"/>
+    <option id="project.dir" value="lib/&lt;CONFIG&gt;" inherit="1"/>
+    <option id="project.name" value="libcompiler_rt.a"/>
+    <option id="project.type" value="arch"/>
+</project>

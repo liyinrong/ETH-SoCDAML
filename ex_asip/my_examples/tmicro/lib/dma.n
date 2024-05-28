@@ -1,0 +1,75 @@
+/*
+-- File : dma.n
+--
+-- Contents : nML model for the Tmicro DMA pre/post functions example .
+--
+-- Copyright (c) 2014-2018 Synopsys, Inc. This Synopsys processor model
+-- captures an ASIP Designer Design Technique. The model and all associated
+-- documentation are proprietary to Synopsys, Inc. and may only be used
+-- pursuant to the terms and conditions of a written license agreement with
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution
+-- of the Synopsys processor model or the associated  documentation is
+-- strictly prohibited.
+*/
+
+/*
+-- Note: these instructions are part of a DMA interface that is modeled
+-- as Pre and Post functions of the ISS (see section 1.5 of the Checkers 
+-- ISS Interface manual.  This DMA implementation is therefore an ISS-only 
+-- feature.  It is not supported in the generated RTL code.
+*/
+
+// DMA interface for pre/post function example
+trn dma_data<word>;         // Data output port
+trn dma_cmd<uint2>;         // Command output port
+inport dma_ready<uint1>;   // Acknowledge input port
+
+property dead_end: dma_data;
+property dead_end: dma_cmd;
+
+opn dma(write_dma_command |
+	write_dma_reset |
+	read_dma_ready
+    )
+{
+    image
+	: "100000000"::"0"::write_dma_command
+	| "100000000"::"0000000"::write_dma_reset
+	| "100000000"::"100"::read_dma_ready
+	;
+}
+
+trn cbus<uint2>;
+
+enum dma_op { from=1, to=2, count=3 };
+
+opn write_dma_command(op: dma_op, src: wreg)
+{
+    action {
+	stage E1:
+	dma_cmd = cbus = op;
+	dma_data = wbus = src;
+    }
+    syntax: "dma " op src;
+    image: op::src;
+}
+
+opn write_dma_reset()
+{
+    action {
+	stage E1:
+	dma_cmd = cbus = 0;
+    }
+    syntax: "dma reset";
+}
+
+opn read_dma_ready(dst: wreg)
+{
+    action {
+	stage E1:
+	dst = wbus = dma_ready;
+    }
+    syntax: "dma ready " dst;
+    image: dst;
+}
+

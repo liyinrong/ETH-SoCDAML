@@ -1,0 +1,37 @@
+09:19:48 **** Build of configuration Hardware for project filt_bp_hw ****
+make -j8 all 
+/usr/pack/vitis-2022.1-zr/Vitis/2022.1/bin/v++ --target hw --compile -I"../src/hw_function" --config filt_bp_hw-compile.cfg -o"build/filt_bp_hw.xo" "../src/hw_function/hw_filt_bw.cpp"
+Option Map File Used: '/usr/pack/vitis-2022.1-zr/Vitis/2022.1/data/vitis/vpp/optMap.xml'
+
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ compile can be found at:
+	Reports: /scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/filt_bp_hw/Hardware/build/reports/filt_bp_hw
+	Log files: /scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/filt_bp_hw/Hardware/build/logs/filt_bp_hw
+Running Dispatch Server on port: 36023
+INFO: [v++ 60-1548] Creating build summary session with primary output /scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/filt_bp_hw/Hardware/build/filt_bp_hw.xo.compile_summary, at Tue May 21 11:20:00 2024
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Tue May 21 11:20:00 2024
+INFO: [v++ 60-895]   Target platform: /scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_basic/export/zedboard_basic/zedboard_basic.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_basic/export/zedboard_basic/hw/design_1_wrapper.xsa'
+INFO: [v++ 60-585] Compiling for hardware target
+INFO: [v++ 60-423]   Target device: zedboard_basic
+INFO: [v++ 60-242] Creating kernel: 'filt_bp_hw'
+
+===>The following messages were generated while  performing high-level synthesis for kernel: filt_bp_hw Log file: /scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/filt_bp_hw/Hardware/build/filt_bp_hw/filt_bp_hw/vitis_hls.log :
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_62_1'.
+INFO: [v++ 200-1470] Pipelining result : Target II = NA, Final II = 1, Depth = 146, loop 'VITIS_LOOP_62_1'
+INFO: [v++ 200-790] **** Loop Constraint Status: All loop constraints were satisfied.
+INFO: [v++ 200-789] **** Estimated Fmax: 136.99 MHz
+INFO: [v++ 60-594] Finished kernel compilation
+INFO: [v++ 60-244] Generating system estimate report...
+INFO: [v++ 60-1092] Generated system estimate report: /scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/filt_bp_hw/Hardware/build/reports/filt_bp_hw/system_estimate_filt_bp_hw.xtxt
+INFO: [v++ 60-586] Created build/filt_bp_hw.xo
+INFO: [v++ 60-2343] Use the vitis_analyzer tool to visualize and navigate the relevant reports. Run the following command. 
+    vitis_analyzer /scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/filt_bp_hw/Hardware/build/filt_bp_hw.xo.compile_summary 
+INFO: [v++ 60-791] Total elapsed time: 0h 0m 59s
+INFO: [v++ 60-1653] Closing dispatch client.
+
+09:20:50 Build Finished (took 1m:1s.497ms)
+

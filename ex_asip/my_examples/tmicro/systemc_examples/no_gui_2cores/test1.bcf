@@ -1,0 +1,10 @@
+_symbol tmicro_init 0x8000             // Start with tmicro_init.s code
+_entry_point tmicro_init 
+_symbol _main _next
+_stack DM 0x8001 0x1fff                // Avoid address zero for C locals.
+_reserved DM 0x8000 1
+
+_always_include _main_argv_area   // Reserve space for main() arguments
+
+_reserved DM 0 0x8000
+_reserved PM 0 0x8000

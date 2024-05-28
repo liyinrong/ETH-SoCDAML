@@ -1,0 +1,12 @@
+<simulator name="Simulator" processor="tmicro" mode="ia" lib="../lib">
+    <option id="checkers.AsyncPutGet" value="DM" inherit="1"/>
+    <option id="checkers.ExtraCFiles" value="&lt;PROCDIR&gt;/../tlm2/tmicro_sc_ia.c" inherit="1"/>
+    <option id="checkers.ExtraIncDirs" value="{$(OSCI_DIR)/include}" inherit="1"/>
+    <option id="checkers.ExtraLibraries" value="{$(OSCI_DIR)/lib-linux64/libsystemc.a}" inherit="1"/>
+    <option id="checkers.HostedClib" value="on"/>
+    <option id="checkers.IssName" value="tmicro_sc_ia"/>
+    <option id="checkers.NoMain" value="on"/>
+    <option id="checkers.NoTclTuiLibs" value="on"/>
+    <option id="checkers.UserPublicMembers" value="tmicro_members.h"/>
+    <option id="checkers.WorkDir" value="tmicro_sc_ia_work"/>
+</simulator>

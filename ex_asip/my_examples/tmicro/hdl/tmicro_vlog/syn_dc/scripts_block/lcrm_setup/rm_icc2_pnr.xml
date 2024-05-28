@@ -1,0 +1,213 @@
+
+<!--
+## HEADER_MSG ============================================================================
+## HEADER_MSG Lynx Compatible Reference Methodology (LCRM) Setup File
+## HEADER_MSG Script: rm_icc2_pnr.xml
+## HEADER_MSG Version: M-2016.12-SP4 (July 17, 2017)
+## HEADER_MSG Copyright (C) 2010-2017 Synopsys, Inc. All rights reserved.
+## HEADER_MSG ============================================================================
+## HEADER_MSG DESCRIPTION:
+## HEADER_MSG * Provided to support example execution of the product methodology scripts in
+## HEADER_MSG * the Lynx Design System
+## HEADER_MSG OPEN IN Lynx Runtime Manager Flow Editor"
+## HEADER_MSG ============================================================================
+-->
+<flow name="rm_icc2_pnr">
+    <note name="note-1" title="Want a different top flow for this block? &lt;i&gt;click here&lt;/i&gt;" always_show_detail="0">
+        <text>Want to change the top flow for this block?
+
+Either edit this flow or use another flow, including the sample flows included in the 
+scripts_block/lcrm_setup directory.
+
+Use the &quot;Block Flow Manager&quot; to configure a new top flow
+1) Open the &quot;Block Flow Manager&quot; (found as the wrench icon located in toolbar or under &quot;File&quot; menu)
+2) &quot;Add existing flow&quot; and navigate to locate the xml flow file to add 
+    (usually in scripts_block/lcrm_setup)
+3) Set a flow as the &quot;Top Flow&quot; by selecting it and using the icon &quot;Make Selected flow the TopFlow&quot;
+    located on the right pane
+4) Set a &quot;Flow Goal&quot; by selecting the target task from the lower pane and using the
+   right icon &quot;Make selected Task the FlowGoal&quot;
+5) save (which will write the scripts_block/conf/block.xml with your config)</text>
+    </note>
+    <note name="note-2-copy" title="Optional Tasks">
+        <text>These optional tasks are not tied into the flow by default but users can
+explicitly execute them or modify the flow to tie them in with an edge.
+
+The pt_eco_* tasks updates the ICC-II database with eco edits calculated
+by the PT eco task from the PT rm.</text>
+    </note>
+    <note name="note-3" title="ICC II PNR"/>
+    <join_task name="all">
+        <step>rm_icc2</step>
+        <dst>all</dst>
+    </join_task>
+    <join_task name="setup">
+        <step>rm_icc2</step>
+    </join_task>
+    <tool_task name="chip_finish">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/chip_finish.tcl</script_file>
+        <src>signoff_drc</src>
+        <dst>chip_finish</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="clock_opt_cts">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/clock_opt_cts.tcl</script_file>
+        <src>place_opt</src>
+        <dst>clock_opt_cts</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="clock_opt_opto">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/clock_opt_opto.tcl</script_file>
+        <src>clock_opt_cts</src>
+        <dst>clock_opt_opto</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="export">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/export.tcl</script_file>
+        <dst>export</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="fm">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/fm.tcl</script_file>
+        <src>write_data</src>
+        <dst>fm</dst>
+        <tool>fm</tool>
+    </tool_task>
+    <tool_task name="in_design_pnr_rail_analysis">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/in_design_pnr_rail_analysis.tcl</script_file>
+        <dst>in_design_pnr_rail_analysis</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="init_design">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/init_design.tcl</script_file>
+        <src>init_design</src>
+        <dst>init_design</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="place_opt">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/place_opt.tcl</script_file>
+        <src>init_design</src>
+        <dst>place_opt</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="pt_eco">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/pt_eco.tcl</script_file>
+        <src>route_opt</src>
+        <dst>pt_eco</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="pt_eco_incremental_1">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/pt_eco_incremental_1.tcl</script_file>
+        <src>route_opt</src>
+        <dst>pt_eco_incremental_1</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="pt_eco_incremental_2">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/pt_eco_incremental_2.tcl</script_file>
+        <src>pt_eco_incremental_1</src>
+        <dst>pt_eco_incremental_2</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="route_auto">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/route_auto.tcl</script_file>
+        <src>clock_opt_opto</src>
+        <dst>route_auto</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="route_opt">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/route_opt.tcl</script_file>
+        <src>route_auto</src>
+        <dst>route_opt</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="signoff_drc">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/signoff_drc.tcl</script_file>
+        <src>route_opt</src>
+        <dst>signoff_drc</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="summary">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/summary.tcl</script_file>
+        <dst>summary</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="write_data">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/write_data.tcl</script_file>
+        <src>chip_finish</src>
+        <dst>write_data</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="write_data_for_etm">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_pnr_scripts/write_data_for_etm.tcl</script_file>
+        <dst>write_data_for_etm</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <edges>
+        <edge from="all" to="summary"/>
+        <edge from="chip_finish" to="all"/>
+        <edge from="chip_finish" to="write_data"/>
+        <edge from="clock_opt_cts" to="clock_opt_opto"/>
+        <edge from="clock_opt_opto" to="route_auto"/>
+        <edge from="fm" to="note-2-copy" points="52,43"/>
+        <edge from="init_design" to="place_opt"/>
+        <edge from="note-2-copy" to="export" points="49,19"/>
+        <edge from="note-2-copy" to="in_design_pnr_rail_analysis" points="49,27"/>
+        <edge from="note-2-copy" to="pt_eco" points="49,31"/>
+        <edge from="note-2-copy" to="write_data_for_etm" points="49,23"/>
+        <edge from="place_opt" to="clock_opt_cts"/>
+        <edge from="pt_eco_incremental_1" to="note-2-copy" points="50,35"/>
+        <edge from="pt_eco_incremental_1" to="pt_eco_incremental_2"/>
+        <edge from="pt_eco_incremental_2" to="note-2-copy" points="51,39"/>
+        <edge from="route_auto" to="route_opt"/>
+        <edge from="route_opt" to="pt_eco" points="31,31"/>
+        <edge from="route_opt" to="pt_eco_incremental_1" points="31,35"/>
+        <edge from="route_opt" to="signoff_drc"/>
+        <edge from="setup" to="init_design"/>
+        <edge from="signoff_drc" to="chip_finish"/>
+        <edge from="summary" to="note-2-copy" points="54,47"/>
+        <edge from="write_data" to="fm"/>
+    </edges>
+    <graph grid_width="630" grid_height="500">
+        <node name="note-1" x="210" y="30"/>
+        <node name="note-2-copy" x="540" y="160"/>
+        <node name="note-3" x="190" y="70"/>
+        <node name="all" x="190" y="470"/>
+        <node name="setup" x="190" y="110"/>
+        <node name="chip_finish" x="190" y="430"/>
+        <node name="clock_opt_cts" x="190" y="230"/>
+        <node name="clock_opt_opto" x="190" y="270"/>
+        <node name="export" x="440" y="190"/>
+        <node name="fm" x="460" y="430"/>
+        <node name="in_design_pnr_rail_analysis" x="380" y="270"/>
+        <node name="init_design" x="190" y="150"/>
+        <node name="place_opt" x="190" y="190"/>
+        <node name="pt_eco" x="440" y="310"/>
+        <node name="pt_eco_incremental_1" x="400" y="350"/>
+        <node name="pt_eco_incremental_2" x="400" y="390"/>
+        <node name="route_auto" x="190" y="310"/>
+        <node name="route_opt" x="190" y="350"/>
+        <node name="signoff_drc" x="190" y="390"/>
+        <node name="summary" x="440" y="470"/>
+        <node name="write_data" x="380" y="430"/>
+        <node name="write_data_for_etm" x="410" y="230"/>
+    </graph>
+</flow>
+
+

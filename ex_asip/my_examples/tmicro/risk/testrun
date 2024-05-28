@@ -1,0 +1,9 @@
+templates     arith1   20
+templates     arith2   20
+templates     move     50
+templates     ldst     25
+templates     jump     25
+templates     call     10
+templates     doloop   20
+templates     longloop N1
+templates     swloop   10

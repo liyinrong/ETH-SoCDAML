@@ -1,0 +1,25 @@
+/*
+-- File : tmicro.bcf
+-- Contents :  default linker configuration file.
+-- Copyright (c) 2014 Synopsys Inc.
+*/
+
+_symbol tmicro_init 0             // Start with tmicro_init.s code
+_entry_point tmicro_init
+// Continue with _start_basic/_start
+#ifndef USE_CRT0
+_symbol _start_basic _after tmicro_init
+#else
+_symbol _start _after tmicro_init
+#endif
+// crt0 is required for C++ (global constructors) and atexit() functionality.
+
+_stack DM 1 0x1fff
+
+_symbol __dso_handle 0            // Static linking
+_extern __dso_handle
+
+_always_include _main_argv_area   // Reserve space for main() arguments
+
+_exclusive DM 0x0000 1 // NULL pointer
+_exclusive DM 0xffff 1 // one past the last element pointer

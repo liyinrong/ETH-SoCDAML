@@ -1,0 +1,8 @@
+#ifndef _LIBCPP_CONFIG_LITE
+#define _LIBCPP_CONFIG_LITE
+
+#define _LIBCPP_LITE
+
+#define _LIBCPP_HAS_NO_FLOATS
+
+#endif

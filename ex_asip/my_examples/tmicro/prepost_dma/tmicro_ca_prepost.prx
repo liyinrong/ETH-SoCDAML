@@ -1,0 +1,25 @@
+<simulator name="Simulator" processor="tmicro" mode="ca" lib="../lib">
+    <option id="checkers.ArgcArgv" value="on"/>
+    <option id="checkers.BreakpointType" value="all"/>
+    <option id="checkers.ColorStorageReadsWrites" value="all"/>
+    <option id="checkers.CycleBasedFileInput" value="on"/>
+    <option id="checkers.ExtraCFiles" value="prepost.c" inherit="1"/>
+    <option id="checkers.ExtraHeaders" value="prepost.h" inherit="1"/>
+    <option id="checkers.FileInputType" value="all"/>
+    <option id="checkers.FileOutputType" value="all"/>
+    <option id="checkers.FiniFunction" value="dma_fini"/>
+    <option id="checkers.HostedClib" value="on"/>
+    <option id="checkers.InitFunction" value="dma_init"/>
+    <option id="checkers.IssName" value="tmicro_ca_prepost"/>
+    <option id="checkers.PipelineDepth" value="6"/>
+    <option id="checkers.PostFunction" value="dma_post"/>
+    <option id="checkers.PreFunction" value="dma_pre"/>
+    <option id="checkers.Profile" value="on"/>
+    <option id="checkers.ProfileHazards" value="on"/>
+    <option id="checkers.ProfileOperations" value="on"/>
+    <option id="checkers.ProfileStorageType" value="mem"/>
+    <option id="checkers.TraceExecution" value="on"/>
+    <option id="checkers.VhdlVerilogComparison" value="on"/>
+    <option id="checkers.WatchpointType" value="all"/>
+    <option id="checkers.WorkDir" value="tmicro_ca_prepost_work"/>
+</simulator>

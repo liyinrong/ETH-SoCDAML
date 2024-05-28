@@ -1,0 +1,7 @@
+<project name="Project" processor="tzscale" lib="../../lib">
+    <file type="c" name="dhry.c" path=""/>
+    <option id="bridge.llibs" value="softfloat" inherit="1" cfg="Release"/>
+    <option id="bridge.llibs" value="tzscale c compiler_rt" inherit="1" cfg="Release_LLVM"/>
+    <option id="project.name" value="dhry"/>
+    <option id="project.type" value="exe"/>
+</project>

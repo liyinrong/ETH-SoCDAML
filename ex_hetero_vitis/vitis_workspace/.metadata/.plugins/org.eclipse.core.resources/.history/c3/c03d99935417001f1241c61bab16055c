@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ASCII"?>
+<hwlink:HwLinkProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hwlink="http://www.xilinx.com/acceleration/hwlink" name="filt_bp_hw_system_hw_link" platform="/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_basic/export/zedboard_basic/zedboard_basic.xpfm" systemProject="filt_bp_hw_system" cpu="pl">
+  <configuration name="Emulation-SW" id="com.xilinx.ide.accel.config.hwlink.sw_emu.889247331">
+    <configBuildOptions xsi:type="hwlink:LinkOptions">
+      <binaryContainers name="binary_container_1">
+        <kernels name="filt_bp_hw" projectName="filt_bp_hw">
+          <computeUnits name="filt_bp_hw_1" slr="">
+            <args name="outVec" master="true" memory=""/>
+            <args name="inVec" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+  </configuration>
+  <configuration name="Emulation-HW" id="com.xilinx.ide.accel.config.hwlink.hw_emu.785565317">
+    <configBuildOptions xsi:type="hwlink:LinkOptions" target="hw_emu">
+      <binaryContainers name="binary_container_1">
+        <kernels name="filt_bp_hw" projectName="filt_bp_hw">
+          <computeUnits name="filt_bp_hw_1" slr="">
+            <args name="outVec" master="true" memory=""/>
+            <args name="inVec" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+  </configuration>
+  <configuration name="Hardware" id="com.xilinx.ide.accel.config.hwlink.hw.1576273270">
+    <configBuildOptions xsi:type="hwlink:LinkOptions" target="hw" exportHw="true">
+      <binaryContainers name="binary_container_1">
+        <kernels name="filt_bp_hw" projectName="filt_bp_hw">
+          <computeUnits name="filt_bp_hw_1" slr="">
+            <args name="outVec" master="true" memory=""/>
+            <args name="inVec" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+    <lastBuildOptions xsi:type="hwlink:LinkOptions" target="hw" exportHw="true">
+      <binaryContainers name="binary_container_1">
+        <kernels name="filt_bp_hw" projectName="filt_bp_hw">
+          <computeUnits name="filt_bp_hw_1" slr="">
+            <args name="outVec" master="true" memory=""/>
+            <args name="inVec" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </lastBuildOptions>
+  </configuration>
+</hwlink:HwLinkProject>

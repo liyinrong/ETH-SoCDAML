@@ -1,0 +1,6 @@
+<project name="Project" processor="tmicro" lib="../../lib">
+    <option id="project.type" value="arch"/>
+    <option id="project.name" value="libcounterisr.a"/>
+    <option id="project.dir" value="./"/>
+    <file type="c" name="counter_isr.c" path=""/>
+</project>

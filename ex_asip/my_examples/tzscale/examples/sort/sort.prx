@@ -1,0 +1,9 @@
+<project name="Project" processor="tzscale" lib="../../lib">
+    <file type="c" name="sort.c" path=""/>
+    <issinit>fileoutput go -file test.vcd -registers On -transitories Off -include_module_register_files On -memories On -format go_vhdl -printmode when_written -skiplist {} -modules {} -skip_internal_memories Off</issinit>
+    <option id="bridge.llibs" value="tzscale c" inherit="0"/>
+    <option id="cpp.include" value=".." inherit="1"/>
+    <option id="project.name" value="sort"/>
+    <option id="project.type" value="exe"/>
+    <option id="simrun.issdb" value="../../debug_client/tzscale_client ../../debug_client_no_isa_compressed/tzscale_client_no_isa_com" inherit="1"/>
+</project>

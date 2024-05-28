@@ -1,0 +1,127 @@
+# //  Questa Sim-64
+# //  Version 10.7b_1 linux_x86_64 Jul 26 2018
+# //
+# //  Copyright 1991-2018 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# source /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/tcl_files/config/run_and_exit.tcl
+# source /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/tcl_files/run.tcl
+# vsim -c -quiet vopt_tb -L models_lib -L vip_lib -t ps "+nowarnTRAN" "+nowarnTSCALE" "+nowarnTFMPC" "+TB_PATH=/home/soc_12fs24/ex01_socdaml/pulpissimo/sim" "+UVM_NO_RELNOTES" "+ENTRY_POINT=0x1c008080" -permit_unmatched_virtual_intf "+VSIM_PATH=/home/soc_12fs24/ex01_socdaml/pulpissimo/sim" -voptargs="+acc=mnprv -assertdebug -bitscalars -fsmdebug -linedebug" -gUSE_SDVT_SPI=0 -gUSE_SDVT_CPI=0 -gBAUDRATE=115200 -gENABLE_DEV_DPI=0 -gLOAD_L2=JTAG -gUSE_SDVT_I2S=0 
+# Start time: 22:05:04 on Mar 12,2024
+# ** Warning: ** Warning: (vsim-7032) The 64-bit glibc RPM does not appear to be installed on this machine.  Calls to gcc may fail.
+# 
+# ** Warning: ** Warning: (vsim-7032) The 64-bit glibc RPM does not appear to be installed on this machine.  Calls to gcc may fail.
+# 
+# ** Error: (vsim-191) Questa has encountered an unexpected internal error: ../../src/vsim/vsimfunc.c(1989). 
+# Please contact Questa support at http://supportnet.mentor.com
+# ** Error: (vsim-191) Questa has encountered an unexpected internal error: ../../src/vsim/vsimfunc.c(1989). 
+# Please contact Questa support at http://supportnet.mentor.com
+# ** Error: (vsim-191) Questa has encountered an unexpected internal error: ../../src/vsim/vsimfunc.c(1989). 
+# Please contact Questa support at http://supportnet.mentor.com
+# ** Error: (vsim-191) Questa has encountered an unexpected internal error: ../../src/vsim/vsimfunc.c(1989). 
+# Please contact Questa support at http://supportnet.mentor.com
+# ** Warning: (vsim-3770) Failed to find user specified function 'jtag_tick' in DPI C/C++ source files.
+#    Time: 0 ps  Iteration: 0  Region: /SimJTAG_sv_unit File: /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../rtl/tb/SimJTAG.sv
+# ** Warning: (vsim-8683) Uninitialized out port /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/i_clk_rst_gen/i_fll_soc/i_FLL_digital/TQ has no driver.
+# This port will contribute value (U) to the signal network.
+# ** Warning: (vsim-8683) Uninitialized out port /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/i_clk_rst_gen/i_fll_soc/i_FLL_digital/JTQ has no driver.
+# This port will contribute value (U) to the signal network.
+# ** Warning: (vsim-8683) Uninitialized out port /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/i_clk_rst_gen/i_fll_per/i_FLL_digital/TQ has no driver.
+# This port will contribute value (U) to the signal network.
+# ** Warning: (vsim-8683) Uninitialized out port /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/i_clk_rst_gen/i_fll_per/i_FLL_digital/JTQ has no driver.
+# This port will contribute value (U) to the signal network.
+# ** Warning: (vsim-8683) Uninitialized out port /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/i_clk_rst_gen/i_fll_cluster/i_FLL_digital/TQ has no driver.
+# This port will contribute value (U) to the signal network.
+# ** Warning: (vsim-8683) Uninitialized out port /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/i_clk_rst_gen/i_fll_cluster/i_FLL_digital/JTQ has no driver.
+# This port will contribute value (U) to the signal network.
+# ** Warning: (vsim-3040) Command line generic/parameter "USE_SDVT_I2S" not found in design.
+# ** Warning: (vsim-3040) Command line generic/parameter "USE_SDVT_SPI" not found in design.
+#  
+run -all
+# [CORE] Core settings: PULP_SECURE =           1, N_PMP_ENTRIES =          16, N_PMP_CFG           4
+# ** Warning: (vsim-8315) No condition is true in the unique/priority if/case statement.
+#    Time: 0 ps  Iteration: 0  Process: /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/fc_subsystem_i/FC_CORE/lFC_CORE/RISCY_PMP/pmp_unit_i/<anonymous> File: /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../ips/riscv/./rtl/riscv_pmp.sv Line: 677
+# ** Warning: (vsim-8315) No condition is true in the unique/priority if/case statement.
+#    Time: 0 ps  Iteration: 0  Process: /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/jtag_lint_arbiter_i/<anonymous> File: /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../ips/pulp_soc/rtl/components/tcdm_arbiter_2x1.sv Line: 49
+# [TB]       0ns - Entry point is set to 0x1c008080
+# [TB]       0ns - Asserting hard reset
+# ** Warning: (vsim-3533) [FOFIW] - Failed to open file "fs/file_0_0.txt" for writing.
+# No such file or directory. (errno = ENOENT)    : /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../rtl/tb/tb_fs_handler.sv(269)
+#    Time: 0 ps  Iteration: 0  Instance: /tb_pulp/i_fs_handler/FS_PRINTF_CLUSTER
+# ** Warning: (vsim-3533) [FOFIW] - Failed to open file "fs/file_31_0.txt" for writing.
+# No such file or directory. (errno = ENOENT)    : /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../rtl/tb/tb_fs_handler.sv(269)
+#    Time: 0 ps  Iteration: 0  Instance: /tb_pulp/i_fs_handler/FS_PRINTF_FC
+# ** Warning: (vsim-8315) No condition is true in the unique/priority if/case statement.
+#    Time: 0 ps  Iteration: 1  Process: /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/fc_subsystem_i/FC_CORE/lFC_CORE/RISCY_PMP/pmp_unit_i/<anonymous> File: /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../ips/riscv/./rtl/riscv_pmp.sv Line: 677
+# ** Warning: (vsim-8315) No condition is true in the unique/priority if/case statement.
+#    Time: 0 ps  Iteration: 1  Process: /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/jtag_lint_arbiter_i/<anonymous> File: /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../ips/pulp_soc/rtl/components/tcdm_arbiter_2x1.sv Line: 49
+# ** Warning: (vsim-8315) No condition is true in the unique/priority if/case statement.
+#    Time: 0 ps  Iteration: 2  Process: /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/fc_subsystem_i/FC_CORE/lFC_CORE/RISCY_PMP/pmp_unit_i/<anonymous> File: /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../ips/riscv/./rtl/riscv_pmp.sv Line: 677
+# ** Warning: (vsim-8315) No condition is true in the unique/priority if/case statement.
+#    Time: 0 ps  Iteration: 12  Process: /tb_pulp/i_dut/soc_domain_i/pulp_soc_i/jtag_lint_arbiter_i/<anonymous> File: /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../ips/pulp_soc/rtl/components/tcdm_arbiter_2x1.sv Line: 49
+# [TB]       1ns - Using FLL
+# [TB]       1ns - Not using CAM SDVT
+# Loading default stimuli
+# [JTAG] SoftReset Done(    701ns)
+# [JTAG] Bypass Test Passed (  33301ns)
+# [JTAG] Tap ID: 249511c3 (  43701ns)
+# [JTAG] Tap ID Test PASSED (  43701ns)
+# [test_mode_if]   50301ns - Init
+# [TB]   50301ns - Enabling clock out via jtag
+# [TB]   50301ns - Releasing hard reset
+# [TB]   51901ns - Init PULP TAP
+# [pulp_tap_if] WRITE32 burst @1c008080 for           4 bytes.
+# [TB]   66001ns - Write32 PULP TAP
+# [JTAG] R/W test of L2 succeeded
+# [TB]  176201ns - Halting the Core
+# [TB]  235001ns - Writing the boot address into dpc
+# [TB]  293801ns - Loading L2
+# [JTAG] Loading L2 with pulp tap jtag interface
+# [pulp_tap_if] WRITE32 burst @1c000000 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c000400 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c000800 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c000c00 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c001000 for         960 bytes.
+# [pulp_tap_if] WRITE32 burst @1c008000 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c008400 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c008800 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c008c00 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c009000 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c009400 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c009800 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c009c00 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c00a000 for        1024 bytes.
+# [pulp_tap_if] WRITE32 burst @1c00a400 for         456 bytes.
+# [pulp_tap_if] WRITE32 burst @1c010000 for         752 bytes.
+# [TB] 12855401ns - Resuming the CORE
+# [TB] 13428901ns retrying debug reg access
+# [TB] 13458201ns retrying debug reg access
+# [TB] 13487501ns retrying debug reg access
+# [TB] 13516801ns retrying debug reg access
+# [TB] 13546101ns retrying debug reg access
+# [TB] 13575401ns retrying debug reg access
+# [TB] 13604701ns retrying debug reg access
+# [TB] 13634001ns retrying debug reg access
+# [TB] 13678001ns - Waiting for end of computation
+# [STDOUT-CL31_PE0] 2D Convolution WINDOW=5, DATA_WIDTH=14
+# [STDOUT-CL31_PE0] Perf of dot product: 
+# [STDOUT-CL31_PE0]  	 cycles : 12349 
+# [STDOUT-CL31_PE0]  	 instructions : 11487 
+# [STDOUT-CL31_PE0]  	 load stalls : 720 
+# [STDOUT-CL31_PE0]  	 jump stalls : 0 
+# [STDOUT-CL31_PE0]  	 insrtructions stalls: 132 
+# [STDOUT-CL31_PE0] 
+# [TB] 14551401ns - Received status core: 0x00000000
+# ** Note: $stop    : /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../rtl/tb/tb_pulp.sv(814)
+#    Time: 14551401 ns  Iteration: 0  Instance: /tb_pulp
+# Break at /home/soc_12fs24/ex01_socdaml/pulpissimo/sim/../rtl/tb/tb_pulp.sv line 814
+# End time: 22:06:20 on Mar 12,2024, Elapsed time: 0:01:16
+# Errors: 4, Warnings: 19

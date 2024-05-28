@@ -1,0 +1,54 @@
+#!/usr/bin/env tct_tclsh
+
+# 2-way compare of chess_report files.
+
+
+# Parse a chess_report file.
+# Returns a list of 'type,value' pairs.
+proc parse_output {filename} {
+        set result [list]
+        set f [open $filename "r"]
+        while {[gets $f line] >= 0} {
+                if {[regexp "chess_report\\((.*)\\): (.*) //.*" $line all type value]} {
+                        lappend result $type $value
+                }
+        }
+        close $f
+        return $result
+}
+
+# Compare two chess_report files (e.g. golden reference file with ISS run output file)
+# Returns zero on success.
+proc compare {file1 file2} {
+        set output1 [parse_output $file1]
+        set output2 [parse_output $file2]
+
+        set errors 0
+        foreach {type1 value1} $output1 {type2 value2} $output2 {
+                if {$value1 != $value2} {
+                        set status "diff"
+                        incr errors
+                } elseif {$type1 ne $type2} {
+                        set status "type-diff"
+                        incr errors
+                } else {
+                        set status "ok"
+                }
+                puts "$value1\t$value2\t$status"
+        }
+        puts "\nTotal number of differences: $errors"
+        return $errors
+}
+
+
+if { $argc == 2 } {
+    exit [compare [lindex $argv 0] [lindex $argv 1]]
+} else {
+    puts "  "
+    puts "  usage: crp_compare file1 file2"
+    puts "  "
+    puts "  example: crp_compare test.ok Release/test.crp"
+    puts "  "
+    exit 1
+}
+

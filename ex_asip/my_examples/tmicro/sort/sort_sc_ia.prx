@@ -1,0 +1,6 @@
+<project name="Project" processor="tmicro" lib="../lib">
+    <file type="c" name="sort.c" path=""/>
+    <option id="project.name" value="sort"/>
+    <option id="project.type" value="exe"/>
+    <simdll name="Simulator DLL" simulator="../tlm2/tmicro_sc_ia"/>
+</project>

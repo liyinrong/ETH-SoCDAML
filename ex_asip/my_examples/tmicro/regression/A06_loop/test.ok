@@ -1,0 +1,40 @@
+// test_doi()
+chess_report(int): 0x000d // 13
+chess_report(int): 0x0010 // 16
+chess_report(int): 0x0013 // 19
+chess_report(int): 0x001a // 26
+chess_report(int): 0x001e // 30
+chess_report(int): 0x001f // 31
+chess_report(int): 0x0023 // 35
+// test_do()
+chess_report(int): 0x000d // 13
+chess_report(int): 0x000f // 15
+chess_report(int): 0x0011 // 17
+chess_report(int): 0x001b // 27
+chess_report(int): 0x001f // 31
+chess_report(int): 0x0023 // 35
+// test_nested_doi()
+chess_report(int): 0x000e // 14
+chess_report(int): 0x0011 // 17
+chess_report(int): 0x0015 // 21
+chess_report(int): 0x0019 // 25
+chess_report(int): 0x001c // 28
+chess_report(int): 0x0020 // 32
+chess_report(int): 0x0024 // 36
+chess_report(int): 0x0027 // 39
+chess_report(int): 0x002b // 43
+chess_report(int): 0x002f // 47
+chess_report(int): 0x0069 // 105
+chess_report(int): 0x006d // 109
+// test_nested_do()
+chess_report(int): 0x000e // 14
+chess_report(int): 0x0010 // 16
+chess_report(int): 0x0012 // 18
+chess_report(int): 0x0016 // 22
+chess_report(int): 0x0019 // 25
+chess_report(int): 0x001b // 27
+chess_report(int): 0x001d // 29
+chess_report(int): 0x0021 // 33
+chess_report(int): 0x0025 // 37
+chess_report(int): 0x006e // 110
+chess_report(int): 0x0072 // 114

@@ -1,0 +1,14 @@
+<simulator name="Simulator" processor="tmicro" mode="ia" lib="../lib">
+    <option id="checkers.BreakpointType" value="all"/>
+    <option id="checkers.ColorStorageReadsWrites" value="all"/>
+    <option id="checkers.FileInputType" value="all"/>
+    <option id="checkers.FileOutputType" value="all"/>
+    <option id="checkers.GenerateDynamicCode" value="on"/>
+    <option id="checkers.HostedClib" value="on"/>
+    <option id="checkers.IssName" value="tmicro_ia"/>
+    <option id="checkers.Profile" value="on"/>
+    <option id="checkers.TraceExecution" value="on"/>
+    <option id="checkers.Watchpoints" value="on"/>
+    <option id="checkers.WorkDir" value="tmicro_ia_work"/>
+    <option id="cpp.define" value="IAISS" inherit="1"/>
+</simulator>

@@ -1,0 +1,6 @@
+This is the Parallel Programming Exercise for the SoC for DA and ML lecture.
+
+Please find the exercise instructions in the slides subdirectory.
+
+This exercise is intended to be run on the NVIDIA Tegra TX1. If you run it on
+other systems, please ensure that you have an OpenMP enabled compiler installed.

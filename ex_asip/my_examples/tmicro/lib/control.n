@@ -1,0 +1,272 @@
+/*
+-- File : control.n
+--
+-- Contents : nML model for the Tmicro core - control instructions.
+--
+-- Copyright (c) 2014-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+
+
+opn control_instr(jrd  |
+                  jr   |
+		  jcr  |
+		  j    |
+		  jc   |
+		  ji   |
+		  cl   |
+		  clid |
+		  ret  |
+		  rtd  |
+		  do   |
+		  doi  |
+                  dlf  |
+		  swi  |
+		  rti  |
+		  halt |
+		  swbrk|
+		  nop  )
+{
+    image
+	: "001"::"0110"::"0"::jrd
+	| "001"::"0110"::"1"::jr
+	| "001"::"0111"::"1"::jcr
+	| "001"::"0111"::"010000"::"000"::j
+	| "001"::"0111"::"010010"::"000"::jc
+	| "001"::"0111"::"010011"::"000"::cl
+	| "001"::"0111"::"010100"::clid
+	| "001"::"0111"::"010101"::ji
+	| "001"::"0111"::"010111"::"000"::ret
+	| "001"::"0111"::"011000"::"000"::rtd
+	| "001"::"0111"::"011011"::do
+	| "001"::"0111"::"011100"::"000"::doi
+        | "001"::"0111"::"011101"::"000"::dlf
+	| "001"::"0111"::"00111"::swi
+	| "001"::"0111"::"011001"::"000"::rti
+	| "001"::"0111"::"011010"::"000"::halt
+	| "001"::"0111"::"011110"::"000"::swbrk
+	| "001"::"0111"::"000000"::"000"::nop
+	;
+}
+
+trn trgt<addr>;   hw_init trgt=0;  // avoid uninitialized controller inputs
+trn offs<sbyte>;  hw_init offs=0;  // in VHDL model
+trn tcc<bool>;    hw_init tcc=0;
+
+trn diid<bool>;   hw_init diid=0;  // disable interrupt when in ID stage
+trn die1<bool>;   hw_init die1=0;  // disable interrupt when in E1 stage
+
+trn jcr<bool>;    hw_init jcr=0;   // set when jcr is executed
+trn jc<bool>;     hw_init jc=0;    // set when jc is executed
+
+trn ocd_swbreak_req<bool>; hw_init ocd_swbreak_req=0;
+
+trn lnk_if<addr>;   // link to the instruction in the IF stage (PC)
+trn lnk_pf<addr>;   // link to the instruction in the pre-fetch stage (PC+1)
+
+opn jrd(of: c8s)
+{
+    action { stage ID: diid=1; jump(offs=of); }
+    syntax : "jrd " dec of;
+    image  : of, delay_slots(1), chess_pc_offset(1), class(jump);
+}
+
+opn jr(of: c8s)
+{
+    action { stage ID: jump(offs=of); }
+    syntax : "jr " dec of;
+    image  : of, cycles(2), chess_pc_offset(1), class(jump);
+}
+
+opn jcr(of: c8s)
+{
+    action {
+    stage ID:
+        diid = 1;
+    stage E1:
+        die1 = 1;
+	tcc = cndr = CND;
+	jump(tcc,offs=of);
+	jcr = 1;
+    }
+    syntax : "jcr " dec of;
+    image  : of, cycles(3|1), chess_pc_offset(2), class(jump);
+}
+
+opn j(tg: c16u)
+{
+    action { stage ID: jump(trgt=tg); }
+    syntax : "j " tg;
+    image  : tg, cycles(2), class(jump);
+}
+
+opn ji(r: rs)
+{
+    action { stage E1: jump(trgt=r); }
+    syntax : "ji " r;
+    image  : r, cycles(3), class(jump);
+}
+
+opn jc(tg: c16u)
+{
+    action {
+    stage E1:
+	tcc = cndr = CND;
+        jump(tcc,trgt=tg);
+	jc = 1;
+    }
+    syntax : "jc " tg;
+    image  : tg, cycles(3|2), class(jump);
+}
+
+opn cl(tg: c16u)
+{
+    action {
+    stage ID: LR = lnk_pf = bsr(trgt=tg);
+    }
+    syntax : "cl " tg;
+    image  : tg, cycles(2);
+}
+
+opn clid(r: rs)
+{
+    action {
+    stage ID:
+        diid = 1;
+    stage E1:
+        die1 = 1;
+        LR = lnk_pf = bsr(trgt=r);
+    }
+    syntax : "clid " r;
+    image  : r, delay_slots(2);
+}
+
+opn ret()
+{
+    action { stage E1: ret(trgt=LR); }
+    syntax : "rt " ;
+    image  : cycles(3);
+}
+
+opn rtd()
+{
+    action {
+        stage ID: diid=1;
+        stage E1: die1 = 1;  ret(trgt=LR);
+    }
+    syntax : "rtd " ;
+    image  : delay_slots(2);
+}
+
+hw_init lnk_pf = 0;
+
+opn loop(last: c16u)
+{
+    action {
+    stage E1:
+        lew = last;
+        hwdo(lcw,lew);
+#if !defined(__programmers_view__)
+        LF = lfw = incr(lfr=LF) @dlflg;
+        LE[lfw] = lew;
+        LS[lfw] = lsw = lnk_pf;
+        LC[lfw] = lcw;
+#endif
+    }
+    syntax : last;
+    image : last;
+}
+
+opn do(r: rs, l: loop)
+{
+    action {
+    stage E1:
+	lcw=rse1=r;
+        l;
+    }
+    syntax : "do " r "," l;
+    image : r::l, cycles(2), delay_slots(1);
+}
+
+opn doi(count: c16u, l: loop)
+{
+    action {
+    stage E1:
+	lcw=count;
+        l;
+    }
+    syntax : "doi " dec count "," l;
+    image : l::count, cycles(3);
+}
+
+opn dlf()
+{
+    action { stage E1: LF = lfw = decr(lfr=LF) @dlflg; }
+    syntax : "dlf";
+    //image : ;
+}
+
+opn swi(tg: c4u)
+{
+    action {
+    stage ID:
+        ILR = lnk_if = jti(trgt=tg);
+        diid = 1;
+    stage E1:
+        die1 = 1;
+	IE = iew = 0;
+	ISR = wbus = SR;
+    }
+    syntax : "swi " dec tg;
+    image  : tg, cycles(2), class(jump), pdg_encoding(tg);
+}
+
+opn rti()
+{
+    action {
+    stage ID:
+	rti(trgt=ILR);
+#if !defined(__programmers_view__)
+    stage E1:
+	SR = wbus = ISR;
+#endif
+    }
+    syntax : "rti" ;
+    image  : cycles(2);
+}
+
+opn halt()
+{
+    action {
+    stage ID:
+        halt();
+        diid = 1;
+    stage E1:
+        die1 = 1;
+    }
+    syntax : "halt" ;
+    image  : cycles(2);
+}
+
+opn swbrk()
+{
+    action {
+    stage ID:
+	ocd_swbreak_req = 1;
+    }
+    syntax : "swbrk" ;
+    image  : cycles(2);
+}
+
+opn nop()
+{
+    action { stage E1: nop(); }
+    syntax : "nop " ;
+}

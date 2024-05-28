@@ -1,0 +1,955 @@
+
+==============================================================================
+Change notes for the tmicro example processor models.
+
+Version: J-2015.03
+Date: Feb 26 2015
+
+Copyright (c) 2014 Synopsys, Inc. This processor model and the associated
+documentation are proprietary to Synopsys, Inc.  This model may only be
+used in accordance with the terms and conditions of a written license
+agreement with Synopsys, Inc.  All other use, reproduction, or distribution
+of this model are strictly prohibited.
+==============================================================================
+
+
+
+Oct 13 2003
+-----------
+
+* base.c, base_sh.Structural.vhdl
+
+  Behaviour in case shift factor > 15: use 4 LSBs of shift factor (cheapest 
+  in hardware).
+
+
+Oct 17 2003
+-----------
+
+* base_int.h, base_long.h
+
+  Adaption for shift operators (noodle-7.10.12), second argument MUST be
+  int.
+
+Dec 15 2003
+-----------
+
+* base.c, base_sh.Structural.vhdl
+
+  Behaviour in case shift factor > 15: use 5 LSBs of shift factor 
+	- 4 bit shift factor does not cover x << 16
+	- 16 bit shift factor is more expensive
+	     * 16 bit shift factor: 2092.89 gates
+	     *  5 bit shift factor: 1649.87 gates
+
+* Replaced uint1 by bool for compare primitives etc.
+  Added Go-specific typedef.
+
+* C-API:
+   
+  - Added #if defined statements to base_int.h to better support integer
+  operations for various configurations.
+
+  - Added software routines for multiplication in case multiplier is not
+  configured.
+
+  - Added software routines for division.
+
+
+Dec 17 2003
+-----------
+
+* control.c, pcu.c, ...
+
+  Implement interrupts
+
+  Requires that LF is accessed in E1 (save/restore of SR), consequently LE is
+  also written in E1.
+
+  LF bits must not be restored from ISR because restore is after decrement at
+  end of loop by PCU.
+
+
+Sep 2004 (TODO)
+
+ * mult primitive property(commutative)
+
+ * load_store.n: factor ld/st actions
+
+Sep 28 2004
+-----------
+
+ * Removed dbg_exec1  and dbg_instr1
+   Renamed dbg_exec0 to dbg_exec 
+   Renamed dbg_instr0 to dbg_instr 
+
+Dec 16 2004 (base 1.2)
+-----------
+
+ * hdl/primitives/base_controller/vhdl: changed direction of iteration in
+   p_interrupt process  to "for i in 0 downto 7 loop: if accept ... exit"
+
+Jan 21 2005 (base 1.3)
+-----------
+
+ * lib/base_interrupt.h: added chess_storage() to denote manifest argument
+
+    inline assembly void interrupt_mask(int chess_storage() msk)
+
+ * lib/base_chess.h: added chess_storage() to denote manifest argument
+
+    reserved : HS;
+
+Feb 1 2005
+----------
+
+  * lib/base_int.h: 
+   
+       promotion operator void* (sint) = nil; in stead of  addr(word);
+
+Apr 21 2005
+-----------
+
+  * Update of debug client
+
+
+Jul 06 2005
+-----------
+  
+  * Model end of loop test in the nML always rule (base.n, pcu.c)
+
+  * Edge sensitive interrupt inputs (pcu.c) 
+
+  * SystemC debug support: scdbg_req/scdbg_ack (pcu.c)
+
+
+Jul 26 2005
+-----------
+
+  * lib/hazards.n:
+     - sw_stall 1..2 between jump and end of loop
+     - removed redundant WAW hazards(cf. built-in behaviour of tools) 
+   
+  * lib/pcu.c:
+     - line 49 :  new_ireg instead of reg_ireg 
+     - stage names in cntrl signals
+    
+  * lib/base.n:
+     - removed 'if defined(base_has_interrupts)' around always rule
+
+
+Aug 22 2005
+-----------
+
+  * ocd/debug_client: 
+    - introduced PC_NAME (jtag_pdc.h), 
+    - used jtag_pdc_get_reg(...,PC_NAME,...) in checkers_api_l_prog.c
+
+
+Oct 31 2005
+-----------
+
+  * Replaced nint7 by nint9.
+
+Nov 4 2005
+----------
+
+  * Removed checkers convert functions if __checkers_release__ >= 504  
+
+  * Added diid and die1 to "di" instruction so that interrupts are disabled
+    already for the next instruction (IE os cleared only is E1 stage).
+
+Nov 16 2005
+-----------
+
+  * ISS: 
+    - removed LayoutType = 1 (Default is now 3), 
+    - added  Statistics to base.l,
+    - default GUI type -x.
+
+  * SystemC debug interface: 
+    - use type bool for signals scdbg_req and scdbg_ack,
+    - base_pcu::base_pcu sets mdl->scdbg_req = 0; (avoid hw_init).
+
+  * Hardware debugging:
+    - simplified interface,
+
+  * Simplified ifdefs in base_chess.h, introduced base_native.h.
+
+  * hw_init PC = 0; (interpreted by checkers, go bridge and darts).
+
+Nov 21 2005
+-----------
+
+  Changed JTAG scan direction from MSB first to LSB first.
+
+  IEEE Std 1149.1-2001, Definition 3.1.13 defines the LSB as the one nearest 
+  the serial output.
+
+  * HDL (jtag_tap_controller.v and in the scan_register.v), direction of
+    for-loops for scanning.
+
+  * jtag_pdc_convert.c
+    - changed the direction of the for-loop for functions jtag_pdc_u2b and
+      jtag_pdc_b2u.
+    - added function Sstring mirror(const Sstring& bitstring).
+
+  * jtag_pdc_scan.c
+    - moved core_id argument to function  jtag_pdc_scan_ir.
+    - added mirror call to all DBG_*_INSTR codes.
+    - reversed order of core_id and DBG_*_INSTR code in scan string.
+    - added core_id argument to jtag_pdc_scan_ir calls.
+
+  * jtag_pdc_put_get.c
+    - added mirror call to all DBG_*_INSTR codes.
+    - added core_id argument to jtag_pdc_scan_ir calls.
+
+  * jtag_pdc_tcl.c
+    - added mirror call to all DBG_*_INSTR codes.
+    - reversed order of core_id and DBG_*_INSTR code in scan string.
+
+  * jtag_pdc.h
+    - updated jtag_pdc_scan_ir function declaration.
+    - added mirror function declaration.
+
+
+Nov 28 2005
+-----------
+
+  * Added return with delay slot "rtd"
+
+Dec 14 2005
+----------
+
+  * Added diid and die to halt instruction.
+
+
+Dec 22 2005
+-----------
+
+  * Added ports to reg R (4% less area)
+
+  * Added greater-than compare + complements relations
+
+  * Debug client: call chkapi_l_storage_field_to_address in get_as_ulong_long 
+    and put_as_ulong_long.
+
+Feb 27 2006
+-----------
+
+  * Removed warning from debug_client: chkapi_l_program_query_modified()
+  * Improved warning for debug_client: chkapi_l_program_set_pc() 
+
+Mar 3 2006
+----------
+
+  * checkers_api_l_proc.c: 
+    - added chkapi_l_program_disassemble() with PM get from dynamic model and 
+      put to static model.
+    - removed chkapi_l_program_query_stack() and chkapi_l_program_set_stack().
+
+Mar 8 2006
+----------
+
+  * lib/hazards.n: added sw_stall to avoid that two nested zero-overhead
+    loops have the same loop end address.
+
+Mar 22 2006
+-----------
+
+  * lib/base.l: removed "-title {Serial file input}" etc...
+
+May 3 2006
+----------
+
+  * lib/base_chess.h: added LF to reserved register list
+
+May 3 2006
+----------
+
+  * lib/pcu.c: moved interrupt related assignments in user_update_status()
+    into  #if defined(base_has_interrupts).
+
+May 22 2006
+-----------
+
+  * Replaced "fu dlc" by: dlact; dlend; dltst; dlcnt; dlflg; dlls;  
+    This is needed to avoid Go warnings "Transitory dlp_active is written 
+    and read within operator dlc".
+
+  * lib/base.n: added syntax for reg R, 
+    lib/base_chess.h: removed R7 from argument registers (allow indirect 
+    call with 8 or more  arguments). 
+
+  * ALU: support for min/max/select.
+
+  * lib/pcu.c replace mdl->statistics()->additional_cycle_count(J,-1); 
+              by      chkapi_l_additional_cycle_count(mdl->uicore(),J,-1);
+
+
+Jun 7 2006
+----------
+
+  * Make jcr cycles(3|1) instead of cycles(3|2):
+    - kill next instruction when taken,
+    - replace cjstl by jcr and jc,
+
+Jun 16 2006
+-----------
+
+  * debug_client/checkers_api_l_prog.c: call jtag_pdc_resume_instr inside
+    hitcount loop. 
+
+Jun 17 2006
+-----------
+
+  * debug_client/checkers_api_l_prog.c: use tct_long_long for count
+    arguments of 
+      chkapi_l_program_query_user_cyclecount()
+      chkapi_l_program_query_sys_cyclecount()
+      chkapi_l_program_query_instructioncount()
+
+  * Cleanup of api_l interface code: functions that only report a 'not
+    implemented' warning are removed.
+
+     Removed api_l files:
+         checkers_api_l_exectrc.c 
+	 checkers_api_l_filei.c
+	 checkers_api_l_fileo.c 
+	 checkers_api_l_profile.c
+	 checkers_api_l_stor.c 
+	 checkers_api_l_wtchpt.c
+	 checkers_api_l_xmgr.c
+     	
+     Removed api_l functions in other files:
+	 checkers_api_l_brkpt.c: chkapi_l_breakpoint_check()
+	                         (set BreakpointStage = 0!)
+         checkers_api_l_prog.c:  chkapi_l_program_pre_step_slave()
+	 			 chkapi_l_program_step_slave()
+				 chkapi_l_program_post_step_slave()
+				 chkapi_l_program_query_actions_left()
+				 chkapi_l_program_query_instrhistory()
+				 chkapi_l_program_query_user_cyclecount()
+				 chkapi_l_program_query_sys_cyclecount()
+				 chkapi_l_program_query_instructioncount()
+				 chkapi_l_program_query_modified()
+				 chkapi_l_program_query_pipeline()
+				 chkapi_l_program_query_always_actions()
+
+     Removed config options
+         Profile
+	 TraceExecutionPoint
+	  
+Aug 24 2006
+-----------
+
+  * lib: removed deposit_lo and update_hi (not used).
+
+Aug 29 2006
+-----------
+
+  * lib: removed property cntrl from hdwo primitive.
+
+Sep 8 2006
+----------
+
+  * Added porcessor level noodle option '+i base_chess.h' to base.prx.
+  		
+
+Sep 30 2006
+-----------
+
+  * debug_client/checkers_api_l_prog.c:
+    Added call to chkapi_l_program_set_pc().
+
+
+
+-----------
+
+  * dc2/checkers_api_l_prog.c:
+    Added extra arguments to chkapi_l_program_load()
+      - load_main_argv_strings,
+      - main_argv_strings
+
+Nov 12 2006
+-----------
+
+  * lib/base_div.c: cast to (unsinged) to force modulo addition in p+/-d.
+    lib/base_long_div.c: cast to (unsinged long) to force modulo addition.
+
+Nov 16 2006
+-----------
+
+  * lib/base.prx: added '-l base' and '-L <PROCDIR>'
+                  added base.bcf
+Nov 20 2006
+-----------
+
+  * lib/base.h: removed #if __checkers_release__ < 504  
+
+Nov 22 2006
+-----------
+
+  * lib/base_int.h: and base_mul.c removed property(loop_levels_0)
+
+  * lib/base_div.h and base_long_div.c: use INT_MIN, LONG_MIN, WORD_BIT and
+    LONG_BIT
+
+  * lib/base_mul.h: removed unsigned multiplication
+
+Nov 28 2006
+-----------
+
+  * lib/base.prx: added bridge option '-n' (No strict range checking), so
+    that 'mvi' can be used to generate addreses that lie in second half of
+    memory.
+
+Dec 21 2006
+-----------
+
+  * debug_client: use caching and new jtag_socket_lib.
+
+Jan 8 2007
+----------
+
+  * jtag_emulator.c: reworked for use with new jtag_socket_lib.
+
+  * cycles(3|1) cjump + killing in ID stage
+
+Feb 5 2007 (base 3.4)
+----------
+
+  * PDC: dbg_load/dbg_store post-increments dbg_addr register.
+
+  * Return reads LR in E1 stage
+    - rt cycles(3) instead of cycles(2)
+    - rtd delay_slots(2) instead of delay_slots(1)
+    - remove sw_stall on LR
+
+  * Rewrite always rule for en of loop test
+    - jump primitive replaces trn dlp_jump
+    - combined guard for dlp_enable_test and dlp_end_reached 
+    - pcu.c: add condition vd_jump_trgt_dlp_active_... to absolute jump
+    - Checkers and GO config files.
+
+  * Rename min/max to minw/maxw (avoid conflict with #define macros).
+
+  * Removed hwi instruction, issue swi when a hardware interrupt is
+    accepted.
+
+  * Use Go option encapsulate_primitive_functions;
+
+
+May 24 2007
+-----------
+
+  * PDC: use instruction register for PM load/store.
+
+  * Debug client: update of caching mechanism. 
+
+Jul 25 2007
+-----------
+
+  * Simplified software division routines (base_div.c and base_long_div.c).
+    Relaced keep_in_register struct by a return value for the quotient
+    and a chess_output reference argument for the remainder.
+
+Sep 10 2007 (base 3.5)
+-----------
+
+  * Update of hosted IO for 07Q1 release (stdio.[hc]).
+
+  * Update of checkers config files (enable hosted IO, don'w use processor
+    directory, layout file) and of base.l.
+
+Nov 14 2007
+-----------
+
+  * Added sw_stall rule 
+
+        stage E1: jump(tcc,offs);
+        -> 
+        stage ID: jump(offs);
+
+Nov 25 2007
+-----------
+
+  * Update of hosted IO and added load program arguments (argc/agrv).
+
+  * Rewrite of stall rules using class(jump_id) and class(jump_e1)
+
+  * Enabled VRD in Checkers configurations files.
+
+  * Separate always rules for end of loop test and OCD interface.
+
+Nov 27 2007 (base 3.6)
+-----------
+
+Dec 4 2007
+-----------
+
+  * Replaced macsu and macuu by macl.
+
+  * Replaced dword by dint.
+
+Jan 4 2008
+----------
+
+  * Added stall rule
+
+    sw_stall 1 cycles () {
+        rsrc(offs `E1`);
+    }
+    -> {
+        rsrc(offs `ID`);
+    }
+
+Jan 14 2008
+-----------
+
+Tested profiling in risk (profbin folder). Also added printing of ISS error
+messages to profbin/iss_risk.tcl (rename iss_step_err_handling).  Both
+features should be consolidated in central version.
+
+Feb 18 2008
+-----------
+
+ * base_rewrite.h: correction of min/max rewrite rules. 
+
+Feb 20 2008 (base 3.7)
+-----------
+
+ * debug_client updates for 07Q2.
+   - use checkers_tcl_commp instead of &checkers_tcl_comm
+   - added skip_bss tp program_load
+   - use of checkers_globalsp->checkers_SIGINT_stop_sim;
+   - tct_ulong_long* argument for chkapi_l_storage_get_unsignedlonglongptr
+   
+
+Jun 9 2008 (base 3.8)
+-----------
+
+ * Removed base_has_ configuration options (include all options).
+
+ * Added sw_stall rules to avoid bsr is scheduled as last instruction of
+   hardware loop.
+
+Jun 27 2008
+-----------
+
+ * Merged put_pm_cmds and put_dm_cmds buffers into a signle buffer
+   put_mem_cmds (avoids interference between uploading of PM and DM sections).
+
+
+May 25 2009 (base 4.0)
+-----------
+
+Aug 17 2009 (base 5.0)
+-----------
+
+ * Replaced P<longword> by PH<word> and PL<word>
+
+ * Added chess_pc_offset to: cl, clid, do (needed in for instruction accurate 
+   simulation).
+ 
+ * Removed #define bool uint1. Used boolean type in VHDL controller.
+
+ * Use regression_compare.
+
+ * 09R1 updates :
+     - primitive namespace,
+     - PDG based primitives and PCU,
+     - #if defined(__programmers_view__)
+
+ * Added nML property 'default_cycles : words', and remove cycles(2) from
+   multip word instructions.
+
+ * Project file for IA ISS generation.
+
+ * Project files for ISS and RTL generation.
+
+ * Added lmul intrinsic and rewrite rule
+
+ * Cleanup Makefile.test (support VHDL and Verilog).
+
+Aug 19 2009 (base 5.1)
+-----------
+
+ * Added Release and Debug work directories to base.prx
+
+ * Added clid -> loop end sw_stall rule.
+
+ * Added fileoutput go to iss_risk.tcl (instead of add_file_outputs).
+
+Dec 1 2009
+----------
+
+ * Made chess_memory_copy() inline, defined in base_chess.h.
+
+ * Removed reserved property for PC, SP (these registers are reseved though 
+   other properties).
+
+ * New style bit field extract and update functions, use chess_bitsof(int). 
+
+Jan 11 2010
+-----------
+ 
+ * Update of debug client.
+
+ * Systematically use pm_ ports, PM_ ports are removed.
+
+May 31 2010 (base 6.0)
+-----------
+
+ * Introduced chess_bitsof() in base_div.c and base_long_div.c.
+ * Correction: initialisation of trn_interrupted in base_pcu.p.
+ * Inherit target directory (<CONFIG>) in libbase.prx
+   Added <CONFIG> to -L paths in base.prx.
+ * Added pdc_encoding() for swi instruction. -> DOC
+ * Removed next_pc_lachted property.
+ * Make PH/PL aliases of R (avoid moves).
+ * Introduce mode rules for reg access, use 'dec' syntax for reg fields
+ * Replace local jtag_socket_lib with files in $CHECKERSDIR/include.
+
+Aug 2 2010
+----------
+
+ * Synchronise .diff file names in domake and Makefile.test
+
+
+Aug 5 2010
+----------
+ 
+ * Changed 'int' args to  'long long' for vector element access functions
+   in (checkers_pdc_interface.[hc]):
+   int get_memory_at(string, unsigned addr, unsigned elem, long long& val);
+   int put_memory_at(string, unsigned addr, unsigned elem, long long  val);
+   int get_register(string name, unsigned elem, long long& val);
+   int put_register(string name, unsigned elem, long long  val);
+   
+
+Aug 10 2010
+-----------
+
+ * Include range alias of R in sw_stall rule (required for PH/PL regs).
+
+Aug 11 2010
+-----------
+ 
+ * Remove property(volatile) from halt() and nop().
+
+
+Sep 16 2010 (base 6.1)
+-----------
+
+ * Added indirect jump ji
+
+ * Add cycles(2) to swbrk, remove swbreak() primitive
+
+ * Removed from base_pcu: if (swbreak_req) nextpc = pcr - 1;
+
+ * Debug client updates: 
+   - long long vector element type.
+   - Provisions for software breakpoints (but still disabled).
+
+
+Sep 17 2010
+----------
+
+ * Removed most stages from ocd_if.n.
+
+ * Add sw_stall that prohibits swbrk on eol instruction.
+
+ * Update of debug_client code.
+
+
+11R1.1 (May  2  2011)
+---------------------
+
+* In the Debug settings->Program load options, turn following options off.
+
+    Load program counter Off
+    Load stack pointer   Off
+
+  In the RTL model, these registers aren't initialised according the the Elf
+  file information.  Turning these ootions off makes that the ISS and RTL
+  simulators are in sync with respect to initialisation of registers.
+
+* Use a new unconditional jump primitive with property(jti) to model the
+  swi instruction. The relevant changes are:
+
+    - In base,h, a new 'jti' primitive is added.
+       void  jti(addr)        property(absolute jti);
+    - In control.n, that primitive must be used to implement the swi
+      instruction.
+    - In base_pcu.p, a vd_jti_trgt_ID_sig case is added to the test for 
+      absolute jumps.
+
+* Addition of base_init.s and update of base.bcf.
+
+    - Larger default stack frame.
+    - Avoid allocation at DM[0].
+    - Initialization of SP before jump to main.
+
+* Registering of input ireq_inp 
+
+  There is a combinatorial path from the inport ireq_inp to the PM address 
+  and read enable.  This can be avoided by registering ireq_inp.
+
+    -  Declare registers (in base_pcu.p).
+         reg reg_ireq0<ubyte>;      // registered ireq input port
+         reg reg_ireq1<ubyte>;      // delayed reg_ireq0  
+         property update_in_wait_cycle: reg_ireq0, reg_ireq1;
+     
+    - Modified edge detection
+         uint8 new_ireq = reg_ireq | ~reg_ireq1 & reg_ireq0;
+     
+     - Registering of ireq_inp
+         reg_ireq0 = ireq_inp;      
+         reg_ireq1 = reg_ireq0;
+
+* Integration of ipr2ena into iss.tcl.
+     
+* Class names for profiling.
+
+  - Addition of class names to sw_stall rules, to enable identification and 
+  profiling.
+
+  - Addition of classes for stack spill instructions.
+
+* Added bridge +T option (show referenced data symbols in call tree) to 
+  base.prx.
+
+* Unconditionally include hazards.n and add class(clid) for the specification 
+  of the bsr_to_loop_end sw_stall rule.
+
+* Strength reduction for multiplication with zero in dual predision 
+  'long long' multiplication.
+
+* Check the main dependency hazard on R at_entry.  This allows for a better 
+  occupation of the delay slots of clid and rtd.
+
+* Renamed base to tmicro.
+
+* Change count and end address argument types of hwdo primitive to 
+  unsigned 'addr'. Also affects registers LC, LS and LE and incr_pc().
+
+* Added property(min/max) to min_/max_ intrinsics.
+
+* Accept interrupt in E1 of 'do' is safe, remove die1=1 from 'opn loop()'.
+
+* Program memory loads
+
+    - opn load_pm_wreg_indirect,  cycles(1)
+    - opn store_pm_wreg_indirect, cycles(3)
+    - conversions: word(iword), iword(word);
+    - promotions: word -> iword, addr -> iword
+    - no_redundant_loads : PM;
+
+
+12R1.1 (Feb 28  2012)
+--------------------- 
+
+* Added hw_init for SR.  At least the IE bit must be cleared to avoid that
+  interrupts are accepted immediately after reset. 
+
+* On chip debugging: 
+  - 12R1 update of Checkers_pdc_interface
+  - New ocd_cable class.
+  - Added ins2c.perl script and updated makefile.ins.
+  - Added disabling of interrupts when stepping. 
+  - Added support for OCD watch points on DM and PM stores.
+  - Use Go config option on_chip_debugging : 2 (separate JTAG interface 
+    module is included in the processor core.
+  - Set tck_period in jtag_emulator.c to 13 ns.
+  - Improved jtag_emulator_vhdl.
+ 
+* Setting "Simulator/Pipeline/Return address offset to stored value" set to 1. 
+  Is needed to step-in/out
+
+* Interaction between wait cycles and interrupts
+
+  - Update reg_ireg also in wait cycles:
+  
+    property update_in_wait_cycle: reg_ireg, ...;
+
+  - Do not accept interrupts during wait cycles: 
+
+    if (interruptible && ... && !in_wait_cycle() && ...)
+        trn_interrupted = check_interrupts(new_ireg, new_ireg, i_vector);
+
+  - Added #if defined(TEST_WAITSTATE).
+
+* Removed instruction accurate ISS from sort project.
+
+* Removed PM-specific pointer representation.
+
+* Added select property.
+
+* Use generated relocator file.
+
+* Run time library 
+  - Added  property(never_returns loop_free) for exit() function.
+  - Implement exit() with .stop directive.
+  - Added LDBL_ #defines (pro forma for tmicro).
+
+
+12R1.2 (May 22 2012)
+-------------------- 
+
+* Debug client:
+  - Corrected missing return at end of jts_ocd_cable::send_and_receive().
+  - Added sw_break_instr() function.
+
+* Processor model:
+  - Added divstep instruction and used this to implement 16 bit division. 
+  - Merged mult.n and shift.n into alu.n.
+
+* Added chess_cycle_count based profiling to sort.
+
+* Removed fixed header directive from go_options.cfg
+
+
+12R1.3 (Jun 6 2012)
+------------------- 
+
+* Add _reserved DM 0 to tmicro.bcf.
+
+* Added hdl/ml401 directory.  Defines mapping of RTL code onto Xilinx ML401 
+  Virtex4 board.
+
+* Added ml401 directory. Contains board package for ML401 board's LCD display 
+  and a tailored version of the sort program.
+
+
+13R1.1 (Dec 20 2014)
+--------------------
+
+* Added 'tmicro/manual' directory with nMLView based manual.
+
+* Added missing stall rule cl -> EOL.
+
+* Added property(duplicate_at_using_opn2) for use of add/sub in dual precision
+  context.
+
+* Added Native configuration.
+
+* Added tlm2 example.
+
+* Updated argument_registers property to allow passign of bool via registers.
+
+* Source code for SystemC examples have been added.
+
+
+J-2014.09 (Oct 3 2014)
+---------------------
+
+* Changed Copyright from Target to Synopsys
+
+* Updates to stdio source (inside lib/runtime).
+
+* Debug client is extended with command-line option 'port'.
+  - Allows TCP/IP port for JTAG socket to be speciffied at runtine
+  - E.g debug_client/tests/Makefile for use.
+
+* Changes to Go option file 'hdl/go_options.cfg'
+  - external_module: tb_irq_inp;
+    New method to toggle the interrupt pins in the testbench.
+    Look also in lib/tmicro_io.p for this io_interface.
+
+  - ocd_delay_request: 1;
+    To break false cycle in synthesis.
+    Updated debug_client/tests/test_15_dm_watch accordingly.
+
+  - New pre-processor defines for section 4.12: RTL_SIM and RTL_SYN
+
+  - synopsys_makefile;
+    New clause for Synopsys simulator VCS. Also new subdir hdl/jtag_emulator_snps.
+
+  - New hdl_simulate_command option. Convenient for starting a simulation in
+    another working dir. E.g. make -f ../../hdl/tmicro_vlog/Makefile sim
+
+* Renamed output directories in HDL projects: removed _go suffix.
+
+* Renamed bin/*.tcl scripts for ISS and RTL simulations.
+
+* Renamed regression test subdirs from [AC][0-9][0-9]_* to new structure
+  (cf. regression/README).
+
+* Targets in regression/Makefile, renamed 'checkers' to 'run',
+                                      and 'msim'     to 'rtlrun',
+                                      and 'mdiff'    to 'rtldiff'.
+  Also renamed the target variants with interrupts from prefix 'i'
+  to postfix '_irq', e. g. 'ichess' to 'chess_irq'.
+
+* In regression/utils, renamed itest.prx to test_irq.prx,
+                           and itest.bcf to test_irq.bcf.
+
+* To have more parameterized test source code, there are new header files
+  regression/helper_macros.h and regression/regression.h. Also limits.h
+  was extended with some defines on endianness.
+
+* Extended regression/domake script to run parallel threads. Set environment
+  variable NCORES_HOST.
+
+* Added explicit memory access timing to nML declarations PM and DM.
+
+* Added to debug_client/ocd_cable.h and jts_ocd_cable.h access functions
+  supporting in excess of 64b.
+
+
+K-2015.12 (Nov 2015)
+---------------------
+
+* Introduced compact control_signals
+
+* Configures chessmk -H option for RTL simulation 
+
+* New version runtime library and startup code
+
+* Changed dint members to unsigned 
+
+* Reset stack size to old value (for MPD tutorial example)
+
+* Added exclusive addresses
+
+* Update tmicro isntruction accurate PCU model
+
+* Write iack_out only once
+
+* Don't generate div+mod operators, as this will be a problem for LLVM.
+
+* Adapted bitfield extract function: no longer warning when manifest value is shifted up and bits roll off
+
+* Removed obsolete pm_access_stage
+
+* Added explicit memory access timing.
+
+
+K-2015.12-SP1 (Jan 2015)
+------------------------
+
+* Introduced an io_interface for latching and edge detection of the interrupt
+  requests, avoiding any wait-state dependencies in the PCU (PDG property
+  update_in_wait_cycle deprecated).
+
+L-2016.03 (Feb 2015)
+--------------------
+
+* Added memory address step parameter to debug client.
+
+
+L-2016.09 (Sep 2015)
+--------------------
+
+* Added LLVM support including compiler-rt.
+
+* Added Risk/UVM example in risk/uvm.
+
+* Added exclusive register setting for LR to prevent that side effects are routed to LR.
+
+* Replaced macl() primitive by multss()-add() pattern in nML action attribute.
+
+* Disabled tail call optimisation in Debug configurations.
+
+

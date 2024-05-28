@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="sdx.custom.platform.repository.locations" value="/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_basic/export/zedboard_basic;/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_sw/export/zedboard_sw"/>
+	<item key="sdx.custom.platform.repository.last.directory.dialog.location" value="/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_sw/export/zedboard_sw"/>
+</section>

@@ -1,0 +1,17 @@
+// test_jr_doi()
+chess_report(int): 0x000c // 12
+chess_report(int): 0x000d // 13
+// test_j_doi()
+chess_report(int): 0x0016 // 22
+chess_report(int): 0x0017 // 23
+// test_jcr_doi()
+chess_report(int): 0x0020 // 32
+chess_report(int): 0x0021 // 33
+// test_cl_doi()
+chess_report(int): 0x002a // 42
+chess_report(int): 0x002b // 43
+chess_report(int): 0x002e // 46
+chess_report(int): 0x002f // 47
+chess_report(int): 0x0032 // 50
+chess_report(int): 0x0033 // 51
+chess_report(int): 0x0034 // 52

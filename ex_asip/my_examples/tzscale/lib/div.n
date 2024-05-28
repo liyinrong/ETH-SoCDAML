@@ -1,0 +1,74 @@
+/*
+-- File : div.n
+--
+-- Contents : nML model for the Tzscale processor -- Divide instructions.
+--
+-- Copyright (c) 2015-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+
+opn div_instr(div_rr | rem_rr | div_rru | rem_rru); 
+
+trn div_wad<uint5>;
+
+fu div;
+trn divA<w32>;
+trn divB<w32>;
+trn divC<w32>;
+
+// Hazard transitories
+
+trn div_busy<uint1>;  hw_init div_busy = 0;
+trn div_cnt<uint1>;   hw_init div_cnt = 0;
+trn div_new<uint1>;   hw_init div_new = 0;
+trn div_wnc<uint1>;   hw_init div_wnc = 0; // writes next cycle 
+trn div_addr<uint5>;  hw_init div_addr = 0;
+
+opn div_rru(rs1: mR1, rs2: mR2, rd:c5unz)
+{	
+    action { 
+    stage DE:
+         R[div_wad=rd] = wd = divC = divu(divA=rs1, divB=rs2) @div;
+    }
+    syntax : "divu " "x"rd ", " rs1 "," rs2;
+    image  :   funct7_muldiv.mul_div::rs2::rs1::funct3_mul_div.divu::rd::opc.mul_div_e, class(div);
+}
+
+opn rem_rru(rs1: mR1, rs2: mR2, rd:c5unz)
+{	
+    action { 
+    stage DE:
+         R[div_wad=rd] = wd = divC = remu(divA=rs1, divB=rs2) @div;
+    }
+    syntax : "remu " "x"rd ", " rs1 "," rs2;
+    image  :   funct7_muldiv.mul_div::rs2::rs1::funct3_mul_div.remu::rd::opc.mul_div_e, class(div);
+    
+}
+
+opn div_rr(rs1: mR1, rs2: mR2, rd:c5unz)
+{	
+    action { 
+    stage DE:
+         R[div_wad=rd] = wd = divC = divs(divA=rs1, divB=rs2) @div;
+    }
+    syntax : "div " "x"rd ", " rs1 "," rs2;
+    image  :   funct7_muldiv.mul_div::rs2::rs1::funct3_mul_div.div::rd::opc.mul_div_e, class(div);
+}
+
+opn rem_rr(rs1: mR1, rs2: mR2, rd:c5unz)
+{	
+    action { 
+    stage DE:
+         R[div_wad=rd] = wd = divC = rems(divA=rs1, divB=rs2) @div;
+    }
+    syntax : "rem " "x"rd ", " rs1 "," rs2;
+    image  :   funct7_muldiv.mul_div::rs2::rs1::funct3_mul_div.rem::rd::opc.mul_div_e, class(div);
+}
+

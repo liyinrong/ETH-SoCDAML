@@ -1,0 +1,10 @@
+<project name="Project" processor="tmicro" lib="">
+    <file type="c" name="tmicro_long_div.c" path=""/>
+    <file type="c" name="tmicro_mul_i32.c" path="">
+        <option id="noodle.dunder" value="on"/>
+    </file>
+    <file type="c" name="tmicro_basic.c" path=""/>
+    <file type="a" name="tmicro_init.s" path=""/>
+    <option id="project.name" value="libtmicro.a"/>
+    <option id="project.type" value="arch"/>
+</project>

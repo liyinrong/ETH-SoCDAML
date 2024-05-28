@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root VersionMajor="1" VersionMinor="15">
+  <GenAppInfo Name="Vivado" Version="2022.1" CL="3526262" TimeStamp="Fri Mar 24 17:52:39 2023"/>
+  <DSA Vendor="xilinx" BoardId="zedboard" Name="zed" VersionMajor="0" VersionMinor="1" Description="" FeatureRomTimestamp="0" DcpLogicFunctionStripped="false" DcpEncrypt="false" Unified="true" Fixed="false" DefaultOutputType="sd_card">
+    <Build UsesPR="false" PlatformState="pre_synth" AcceleratorBinaryContent="bitstream" ValidBinaryContentValues="dcp,bitstream" TopModuleName="design_1_wrapper"/>
+    <Board Name="digilentinc.com:zedboard:1.0" Vendor="digilentinc.com" Part="xc7z020clg484-1" BoardPart="digilentinc.com:zedboard:part0:1.0">
+      <Images>
+        <Img Type="HDPI" File="zed_board.jpg"/>
+        <Img Type="MDPI" File=""/>
+        <Img Type="LDPI" File=""/>
+      </Images>
+    </Board>
+    <Devices>
+      <Device Name="fpga0" Type="8" FpgaDevice="zynq:xc7z020:clg484:-1">
+        <Core Name="OCL_REGION_0" Type="clc_region" ComputeUnits="60" DRBDName="design_1.bd"/>
+      </Device>
+    </Devices>
+    <Files>
+      <File Type="FULL_BIT" Name="design_1_wrapper.bit"/>
+      <File Type="HPFM" Name="design_1_wrapper.hpfm"/>
+      <File Type="REBUILD_TCL" Name="prj/rebuild.tcl"/>
+      <File Type="TOP_BD" Name="prj/prj.srcs/sources_1/bd/design_1/design_1.bd"/>
+      <File Type="IP_CACHE_DIR" Name="ipcache"/>
+      <File Type="BOARD_REPO_PATH" Name="board"/>
+    </Files>
+  </DSA>
+</Root>

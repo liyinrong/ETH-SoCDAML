@@ -1,0 +1,101 @@
+{
+    "versionMajor": "0",
+    "versionMinor": "1",
+    "usesPR": "false",
+    "platformState": "pre_synth",
+    "topModuleName": "design_1_wrapper",
+    "acceleratorBinaryFormat": "xclbin2",
+    "acceleratorBinaryContent": "bitstream",
+    "validAcceleratorBinaryContentValues": "dcp,bitstream",
+    "dcpFunctionStripped": "false",
+    "dcpEncrypted": "false",
+    "defaultOutputType": "hw_export",
+    "designIntent": {
+        "dataCenter": {
+            "value": "false",
+            "explicit": "true"
+        },
+        "embedded": {
+            "value": "true",
+            "explicit": "true"
+        },
+        "externalHost": {
+            "value": "false",
+            "explicit": "true"
+        },
+        "serverManaged": {
+            "value": "false",
+            "explicit": "true"
+        }
+    },
+    "board": {
+        "name": "digilentinc.com:zedboard:1.0",
+        "vendor": "digilentinc.com",
+        "part": "xc7z020clg484-1",
+        "boardPart": "digilentinc.com:zedboard:part0:1.0",
+        "imageFileHdpi": "zed_board.jpg"
+    },
+    "devices": [
+        {
+            "name": "fpga0",
+            "type": "8",
+            "fpgaPart": "zynq:xc7z020:clg484:-1",
+            "part": {
+                "name": "xc7z020clg484-1",
+                "architecture": "zynq",
+                "device": "xc7z020",
+                "package": "clg484",
+                "speedGrade": "-1"
+            },
+            "core": {
+                "name": "OCL_REGION_0",
+                "type": "clc_region",
+                "drBDName": "design_1.bd",
+                "numComputeUnits": "60",
+                "availableResources": {
+                    "bramCount": "139",
+                    "dspCount": "160",
+                    "lutCount": "45396",
+                    "registerCount": "96514"
+                }
+            }
+        }
+    ],
+    "files": [
+        {
+            "name": "vpl_gen_fixed.bit",
+            "type": "FULL_BIT"
+        }
+    ],
+    "vendor": "xilinx",
+    "boardId": "zedboard",
+    "name": "zed",
+    "description": "Vivado generated Hardware Platform",
+    "uniqueName": "xilinx:zedboard:zed:0.1",
+    "fpgaPart": "zynq",
+    "fpgaDevice": "xc7z020",
+    "unifiedPlatform": "true",
+    "expandablePlatform": "false",
+    "hardware": "true",
+    "softwareEmulation": "true",
+    "hardwareEmulation": "false",
+    "hardwareEmuPlatform": "false",
+    "usesNIFD": "false",
+    "generatedName": "Vivado",
+    "generatedVersion": "2022.1",
+    "generatedChangeList": "3526262",
+    "generatedIpChangeList": "3524634",
+    "generatedTimestamp": "Tue May 21 11:28:44 2024",
+    "genLink": "true",
+    "idCode": "03727093",
+    "designIDs": {
+        "designID": "3985707600"
+    },
+    "resources": [
+        {
+            "type": "REG",
+            "count": "96514"
+        }
+    ]
+}
+

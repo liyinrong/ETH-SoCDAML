@@ -1,0 +1,19 @@
+
+// input map for linker
+
+_symbol test_init 0
+#ifndef USE_CRT0
+_symbol _start_basic _after test_init
+#else
+_symbol _start _after test_init
+#endif
+_entry_point test_init
+_stack DM 1 0x0800
+
+_symbol __dso_handle 0            // Static linking
+_extern __dso_handle
+
+_always_include _main_argv_area   // Reserve space for main() arguments
+
+_exclusive DM 0x0000 1 // NULL pointer
+_exclusive DM 0xffff 1 // one past the last element pointer

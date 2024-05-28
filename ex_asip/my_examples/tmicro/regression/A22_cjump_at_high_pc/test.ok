@@ -1,0 +1,4 @@
+chess_report(int): 0x0022 // 34
+chess_report(int): 0x0026 // 38
+chess_report(int): 0x0030 // 48
+chess_report(int): 0x0034 // 52

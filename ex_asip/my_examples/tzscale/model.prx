@@ -1,0 +1,9 @@
+<batch name="Batch project" processor="tzscale" lib="lib">
+    <prj kind="project" name="libtzscale" path="lib" configuration="Release"/>
+    <prj kind="project" name="softfloat" path="lib/softfloat" configuration="Release"/>
+    <prj kind="project" name="libc" path="lib/runtime" configuration="Release"/>
+    <prj kind="project" name="libm" path="lib/runtime" configuration="Release"/>
+    <prj kind="simulator" name="tzscale_ca" path="iss"/>
+    <prj kind="hdlgenerator" name="tzscale_vlog" path="hdl"/>
+    <prj kind="project" name="libnative.prx" path="lib" configuration="Native"/>
+</batch>

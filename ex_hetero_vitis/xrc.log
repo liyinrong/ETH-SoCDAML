@@ -1,0 +1,27 @@
+Tue May 21 10:09:50 2024: Server was asked to start on port: '39361'
+Tue May 21 10:09:50 2024: Server is using token UUID: '2daf4e6e-0f0e-43a5-8bf2-e1b3fd23a3d2'
+Tue May 21 10:09:50 2024: Attempting to start server on port '39361'
+Tue May 21 10:09:50 2024: XRC main fifo: created main fifo '/tmp/xrcmain2daf4e6e-0f0e-43a5-8bf2-e1b3fd23a3d2', fd read = 11
+Tue May 21 10:09:50 2024: Running Rule Check Server
+Tue May 21 10:09:50 2024: Version 1.6.1
+Tue May 21 10:09:50 2024: Rule Check Server: Accepted socket connection from client
+Tue May 21 10:09:50 2024: EXCHANGE_TOKEN received, server token: 2daf4e6e-0f0e-43a5-8bf2-e1b3fd23a3d2, passed token: 2daf4e6e-0f0e-43a5-8bf2-e1b3fd23a3d2
+Tue May 21 11:19:48 2024: SESSION_MGR: creating session with session uuid: 'ca9f9d54-137d-4cc6-b823-ad72b2c44522' and name 'Hardware'
+Tue May 21 11:20:00 2024: Rule Check Server: Accepted socket connection from client
+Tue May 21 11:20:13 2024: Rule Check Server: Accepted socket connection from client
+Tue May 21 11:20:50 2024: SESSION_MGR: closing session for UUID 'ca9f9d54-137d-4cc6-b823-ad72b2c44522' with name 'Hardware'
+Tue May 21 11:20:50 2024: SESSION_MGR: creating session with session uuid: 'bde0e47c-3394-438b-a7d0-ddc424f0aa92' and name 'Hardware'
+Tue May 21 11:21:02 2024: Rule Check Server: Accepted socket connection from client
+Tue May 21 11:21:03 2024: Rule Check Server: Accepted socket connection from client
+Tue May 21 11:21:24 2024: Rule Check Server: Accepted socket connection from client
+Tue May 21 11:27:02 2024: Rule Check Server: Accepted socket connection from client
+Tue May 21 11:29:09 2024: SESSION_MGR: closing session for UUID 'bde0e47c-3394-438b-a7d0-ddc424f0aa92' with name 'Hardware'
+Tue May 21 12:10:29 2024: STOP_SERVER received, server token: 2daf4e6e-0f0e-43a5-8bf2-e1b3fd23a3d2, passed token: 2daf4e6e-0f0e-43a5-8bf2-e1b3fd23a3d2
+Tue May 21 12:10:29 2024: Socket received request to stop server.
+Tue May 21 12:10:29 2024: SERVER: destructor for server bound to port 39361
+Tue May 21 12:10:29 2024: XRC main fifo: Good unlink of /tmp/xrcmain2daf4e6e-0f0e-43a5-8bf2-e1b3fd23a3d2
+Tue May 21 12:10:29 2024: Server exiting with status 0.
+Tue May 21 12:10:29 2024: Closing log file.
+tmp/xrcmain8a9dda25-8bbe-4eb7-bba3-8671bdefbf79
+Tue May 21 10:25:39 2024: Server exiting with status 0.
+Tue May 21 10:25:39 2024: Closing log file.

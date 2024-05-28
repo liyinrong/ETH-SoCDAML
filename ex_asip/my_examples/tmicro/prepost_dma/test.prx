@@ -1,0 +1,6 @@
+<project name="Project" processor="tmicro" lib="../lib">
+    <file type="c" name="test.c" path=""/>
+    <option id="project.name" value="test"/>
+    <option id="project.type" value="exe"/>
+    <option id="simrun.issca" value="&lt;PROCDIR&gt;/../prepost_dma/tmicro_ca_prepost" inherit="1"/>
+</project>

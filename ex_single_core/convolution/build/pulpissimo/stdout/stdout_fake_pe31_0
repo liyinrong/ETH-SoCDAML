@@ -1,0 +1,8 @@
+2D Convolution WINDOW=5, DATA_WIDTH=14
+Perf of dot product: 
+ 	 cycles : 12349 
+ 	 instructions : 11487 
+ 	 load stalls : 720 
+ 	 jump stalls : 0 
+ 	 insrtructions stalls: 132 
+

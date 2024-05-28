@@ -1,0 +1,23 @@
+ModuleReadsTransitory = interrupt_io iack_pcu_out ireq_inp
+ModuleWritesTransitory = interrupt_io iack_out ireq_pcu_inp
+ModuleReads_process_result = interrupt_io ireq ireq_inp
+ModuleWrites_process_result = interrupt_io ireq ireq_pcu_inp
+ModuleReads_process_request = interrupt_io iack_pcu_out ireq
+ModuleWrites_process_request = interrupt_io iack_out
+nml_interface = interrupt_io ireq_pcu_inp iack_pcu_out
+mem_interface = interrupt_io iack_out ireq_inp
+ModuleLocalStorage = interrupt_io reg_ipend reg_ireq0 reg_ireq1 ireq
+
+
+ModuleWritesTransitory = tb_irq_inp ireq_inp
+ModuleWrites_process_result = tb_irq_inp ireq_inp
+ModuleWrites_process_request = tb_irq_inp 
+nml_interface = tb_irq_inp ireq_inp
+
+ModuleLocalStorage = tb_irq_inp toggle
+
+
+
+NumberOfPdgModules = 4
+
+NumberOfPrimitveCFiles = 1

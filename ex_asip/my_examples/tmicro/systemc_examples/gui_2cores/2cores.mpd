@@ -1,0 +1,8 @@
+set iss localhost:54565
+set isscmd {tmicro_ca_sc_mi_gui_2cores}
+set issargs {}
+set mode systemc
+set prxl {}
+lappend prxl [dict create id 0 prx test0.prx core iss0 attach 0 async 0 cfg {} dcfg {}]
+lappend prxl [dict create id 1 prx test1.prx core iss1 attach 0 async 0 cfg {} dcfg {}]
+set pil {}

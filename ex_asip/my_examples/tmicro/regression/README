@@ -1,0 +1,24 @@
+
+NOTE: As of the L-2016.09 release, a new approach is applied to Tmicro.  
+The C based regression tests are now instatiated from a generic location.  
+For more information, consult the examples/regression/HOWTO.txt document.
+
+Regression testbench tests the functionality of the ASIP. The subdirectories
+names are structured in the following way:
+
+[ACFMPS][number][_fX][name]
+
+[ACMPS]  : A = Assembly tests
+           C = Generic C tests
+           F = Floating point tests
+           I = Test that only work with test_irq.prx
+           L = Test of libraries
+           M = Memory tests
+           P = Programs/testbenches
+           S = Specific tests for this ASIP
+[number] : number of the test
+[_fX]    : _ = test is enabled
+           f = test is only enabled for full run
+           X = test is disabled (not applicable)
+[name]   : short name of the test
+

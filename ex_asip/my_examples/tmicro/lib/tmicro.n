@@ -1,0 +1,243 @@
+/*
+-- File : tmicro.n
+--
+-- Contents : nML model for the Tmicro core.
+--
+-- Copyright (c) 2014-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+// pipeline stage definitions
+
+enum stage_names { IF, ID, E1 };
+
+// memory declarations 
+
+def  pm_size = 2**16;           // program memory
+mem  PM[pm_size]<iword,addr> access {
+   pm_ld : pm_read`1` = PM[pm_addr];
+   pm_st : PM[pm_addr] = pm_write;
+};
+pipe pm_addr_pipe<addr>;
+
+def  dm_size = 2**16;           // data memory
+mem  DM[dm_size,1]<word,addr> access {
+   dm_ld: dm_read`1` = DM[dm_addr];
+   dm_st: DM[dm_addr] = dm_write;
+};
+pipe dm_addr_pipe<addr>;
+
+// register declarations 
+
+reg R[8]<word,uint3>            // general purpose registers
+            syntax ("R")
+            read( rrid          // ID stage read port
+                  rre1 rse1)    // E1 stage read ports
+            write(rtid          // ID stage write port
+                  rte1);        // E1 stage write port
+
+reg LR<word>;                          hw_init LR = 0;
+reg SP<word>;
+reg PC<addr> read(pcr) write(pcw);     hw_init PC = 0;
+
+reg LF<uint2>            read(lfr lfra) write(lfw);  // loop flag 
+reg LS[0..2]<addr,uint2> read(lsr) write(lsw);       // loop start address
+reg LE[0..2]<addr,uint2> read(ler) write(lew);       // loop end address
+reg LC[0..2]<addr,uint2> read(lcr) write(lcw);       // loop count
+property unconnected : LF, LS, LE, LC;
+hw_init LF = 3;  // no hardware loops active (see manual)
+
+reg CND<bool> read(cndr) write(cndw);   // condition bit
+reg CB<uint1> read(cbr)  write(cbw);    // carry/borrow bit
+reg IE<uint1> read(ier)  write(iew);    // interrupt enable flag
+hw_init IE = 0;
+reg SRa<uint2>;                         // unused status bits
+reg SRb<uint3>;                         // unused status bits
+reg IM<ubyte> read(imr) write (imw);    // interrupt mask
+reg SR<word> { CND; CB; IE; SRa; SRb; IM; };  
+
+reg PL<word> alias R[6];
+reg PH<word> alias R[7];
+
+reg ILR<word>;
+reg ISR<word>;
+
+hw_init cndr = 0;  
+hw_init CND = 0;
+
+// Just declared for HWSW-Debug, not used further:
+trn instr_bits<ubyte>;
+
+fu dlflg;
+
+
+// immediate constant declarations
+
+cst c3u<uint3>;
+cst c4u<uint4>;
+cst c8s<sbyte>;
+cst c8u<ubyte>;
+cst c9n<nint9>;
+cst c16s<word>;
+cst c16u<addr>;
+
+// property declarations
+
+properties {
+    program_memory  : PM;
+    program_counter : PC;
+    endianness      : little;
+    decode_stage    : ID;
+    default_cycles  : words;
+    control_signals : compact;
+}
+
+// start of instruction set grammar
+
+start tmicro;
+
+opn tmicro(alu_instr        |
+		   move_instr       |
+		   load_store_instr |
+		   control_instr    |
+		   dma              |
+		   ext_instr )
+{
+	image
+		: alu_instr
+		| move_instr
+		| load_store_instr
+		| control_instr
+		| dma
+		| ext_instr
+		;
+}
+                
+// mode rules
+
+mode r_reg(r: c3u)
+{
+    value  : R[r] read(rse1) write(rte1);
+    syntax : "r" dec r;
+    image  : r;
+}
+
+mode sp_reg()      { value  : SP;    syntax : "sp"; }
+mode lr_reg()      { value  : LR;    syntax : "lr"; }
+mode sr_reg()      { value  : SR;    syntax : "sr"; }
+
+mode ilr_reg()     { value  : ILR;    syntax : "ilr"; }
+mode isr_reg()     { value  : ISR;    syntax : "isr"; }
+
+mode wreg(r_reg 
+          | sp_reg | lr_reg | sr_reg 
+          | ilr_reg | isr_reg 
+)
+{
+    image  
+        : "0"::r_reg
+        | "1010"::sp_reg
+        | "1011"::lr_reg
+        | "1100"::sr_reg
+        | "1101"::ilr_reg
+        | "1110"::isr_reg
+        ;
+}
+
+mode rrid(r: c3u)
+{
+    value  : R[r]  read(rrid) write(rtid);
+    syntax : "r" dec r;
+    image  : r;
+}
+
+mode rr(r: c3u) { value  : R[r]  read(rre1); syntax : "r" dec r; image  : r; }
+mode rs(r: c3u) { value  : R[r]  read(rse1); syntax : "r" dec r; image  : r; }
+mode rt(r: c3u) { value  : R[r] write(rte1); syntax : "r" dec r; image  : r; }
+
+// SystemC debug interface
+
+#if defined(__checkers__) && !defined(__go__) 
+trn scdbg_req<bool>;
+trn scdbg_ack<bool>;
+property dead_end : scdbg_req, scdbg_ack;
+#endif
+
+// hardware debug interface
+
+reg ocd_addr<addr> read(ocd_addr_r) write(ocd_addr_w);
+reg ocd_data<word>;
+reg ocd_instr<iword>;
+trn ocd_instr_r<iword>; 
+property unconnected : ocd_instr_r;
+
+trn ocd_ld_DM<bool>; hw_init ocd_ld_DM = 0;
+trn ocd_st_DM<bool>; hw_init ocd_st_DM = 0;
+
+trn ocd_ld_PM<bool>; hw_init ocd_ld_PM = 0;
+trn ocd_st_PM<bool>; hw_init ocd_st_PM = 0;
+
+trn ocd_incr_addr<bool>; hw_init ocd_incr_addr = 0;
+
+fu ocd_addr_incr;
+
+trn ocd_req<uint1>;      hw_init ocd_req = 0;
+trn ocd_exe<uint1>;      hw_init ocd_exe = 0;
+trn ocd_dis_int<uint1>;  hw_init ocd_dis_int = 0;
+
+properties {
+    ocd_address_register        : ocd_addr;
+    ocd_data_register           : ocd_data;
+    ocd_instruction_register    : ocd_instr;
+    ocd_increment_address_guard : ocd_incr_addr;
+    ocd_request                 : ocd_req;
+    ocd_swbreak                 : ocd_swbreak_req;
+    ocd_execute_instruction     : ocd_exe;
+    ocd_disable_interrupt       : ocd_dis_int;
+}
+
+// interrupt interface
+
+inport  ireq_pcu_inp<ubyte>;     // from interrupt io_interface to PCU
+outport iack_pcu_out<ubyte>;     // from PCU to interrupt io_interface
+outport halted_out<uint1>;
+outport debug_out<uint1>;
+
+// always action
+
+#if defined(__go__) 
+opn always(ocd: ocd_if) { action { ocd; } }
+#endif
+
+#include "alu.n"
+#include "move.n"
+#include "load_store.n"
+#include "control.n"
+
+#include "dma.n"
+
+#if defined(__go__) 
+#include "ocd_if.n"
+//---------------- Tracing --------------------------
+// debug control signals
+trn dbg_trace_rd<uint1>;
+trn dbg_trace_rd_cnt<uint1>;
+trn dbg_trace_cfg_wr<uint1>;
+
+// trace channels
+outport trace_data_valid<uint1>;  // pcu to trace_module
+outport trace_data<addr>;         // pcu to trace_module
+
+// some needed transitories
+trn ocd_data_w<word>;     // for write of ocd_data
+trn ocd_data_r<word>;     // for read  of ocd_data
+//---------------------------------------------------
+#endif
+
+#include "hazards.n"
+

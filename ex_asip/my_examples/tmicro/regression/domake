@@ -1,0 +1,84 @@
+#!/bin/csh -f
+
+# -- File : domake
+# --
+# -- Copyright (c) 2014 Synopsys Inc.
+
+if ($#argv < 1) then
+    echo "usage: domake   <make target> [directories]"
+    echo "   or: domake \"<make target> [ISS=<proc>_xyz] [HDL=vlog|vhdl] [CFG=Release|Debug]\" [directories]"
+    exit(1)
+endif
+
+set options = "$1"
+shift argv
+
+if ($#argv == 0) then
+    set directories = `glob "[ACILMPS][0-9][0-9]_*"`
+else
+    set directories = "$argv"
+endif
+
+if ( "$options" =~ virgin ) then
+    # virgin cannot use make.all as it removes the .message file
+    foreach x ($directories)
+        echo "$x make $options"
+        cd $x
+        make -f ../Makefile.test virgin
+        cd ..
+    end
+else
+   if ($?NCORES_HOST == 0) set NCORES_HOST = 1
+   make -f make.all -j $NCORES_HOST MODE="$options" $directories
+endif
+
+
+
+# report failed tests when using a "diff" target
+echo $options | grep -c "diff" > /dev/null
+if ($? == 0) then
+
+    set split = ($options)
+
+    switch ($split[1])
+    case diff:
+	set file = "test.diff"
+	set prof = "test.prf"
+	breaksw
+    case rtldiff:
+	set file = "test.rtldiff"
+	set prof = "test.prf"
+	breaksw
+    case diff_irq:
+	set file = "test_irq.diff"
+	set prof = "test_irq.prf"
+	breaksw
+    case rtldiff_irq:
+	set file = "test_irq.rtldiff"
+	set prof = "test_irq.prf"
+	breaksw
+    endsw
+
+    echo
+    echo "overview failing test results:"
+    set errors = 0
+    echo "summary of test results" > summary
+    echo "-----------------------" >> summary
+    foreach x ($directories)
+	grep "Total number of differences: 0" $x/$file > /dev/null
+	if ($? != 0) then
+	echo "ERROR in : $x"
+	set errors = 1;
+	endif
+	echo $x >> summary
+	grep "Total cycle count" $x/Release/$prof >> summary
+	grep "Total size in program memory" $x/Release/$prof >> summary
+    end
+    
+    if ($errors == 0 ) then
+	echo "all tests OK"
+    else
+	exit(1)
+    endif
+endif
+

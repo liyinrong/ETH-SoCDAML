@@ -1,0 +1,71 @@
+/*
+-- File : hazards.n
+--
+-- Contents : nML model for the Tzscale processor - bypass and stall rules.
+--
+-- Copyright (c) 2015 Synopsys, Inc. This processor model and the associated
+-- documentation are proprietary to Synopsys, Inc.  This model may only be
+-- used in accordance with the terms and conditions of a written license 
+-- agreement with Synopsys, Inc.  All other use, reproduction, or distribution 
+-- of this model are strictly prohibited.
+*/
+
+
+// Register bypass for ALU instructions
+
+bypass 1 cycles () { 
+    stage WB: R$[#] = #PD; 
+} -> { 
+    stage DE: #r1 = R$[#]; 
+}
+
+bypass 1 cycles () { 
+    stage WB: R$[#] = #PD; 
+} -> { 
+    stage DE: #r2 = R$[#]; 
+}
+
+bypass 1 cycles () {
+    stage WB: R$[#] = #PD;
+} -> {
+    stage DE: #r3 = R$[#];
+}
+
+// Hardware stall for load instructions
+
+hw_stall 1 cycles () { stage WB: R$[#] = lxC; } -> { ... = R$[#]; }
+
+// Hardware stalls for division
+
+// Stall when an instruction reads the result while unit is still busy (RAW)
+
+hw_stall trn () { 
+    trn(div_busy); address_trn(div_addr); 
+} -> { 
+    stage DE: ... = R$[#]; 
+}
+
+// Do not write to write before result is written (WAW)
+
+hw_stall trn () { 
+    trn(div_busy); address_trn(div_addr); 
+} -> { 
+    stage WB: R$[#] = ...; 
+}
+
+// No new division may be started while the previous is still busy 
+ 
+hw_stall trn () {
+    trn(div_cnt); 
+} -> { 
+    class(div);  // trn(div_new);
+}
+
+
+// No instruction may use register write port when result is written
+
+hw_stall trn () {
+    trn(div_wnc);
+} -> {
+    stage WB: R$[] = w1; 
+}

@@ -1,0 +1,8 @@
+Perf of dot product: 
+ 	 cycles : 785 
+ 	 instructions : 777 
+ 	 load stalls : 0 
+ 	 jump stalls : 0 
+ 	 insrtructions stalls: 0 
+
+Nice! Well done! 0 errors

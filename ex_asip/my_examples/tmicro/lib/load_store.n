@@ -1,0 +1,148 @@
+/*
+-- File : load_store.n
+--
+-- Contents : nML model for the Tmicro core - load/store instructions.
+--
+-- Copyright (c) 2014-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+
+
+
+opn load_store_instr(load_store_wreg_sp_indexed  |
+		     load_store_wreg_indirect    |
+		     load_store_pm_wreg_indirect |
+		     add_sp_word                 |
+		     add_sp_byte                 )
+{
+    image 
+	: "011"::load_store_wreg_sp_indexed
+	| "010"::"000"::load_store_wreg_indirect
+	| "010"::"001"::load_store_pm_wreg_indirect
+	| "000"::add_sp_word	
+	| "010"::"1"::add_sp_byte::"0000"	;
+}
+
+fu ag1;           
+trn ag1p<word>;
+trn ag1m<word>;
+trn ag1q<word>;
+
+enum load_store_op { ld, st };
+
+// indexed-immediate stack load/store
+
+opn load_store_wreg_sp_indexed(ls: load_store_op, rr: wreg, offs: c9n)
+{
+    action {
+    stage ID:
+	ag1q = add(ag1p=SP,ag1m=offs) @ag1;
+    stage ID..E1:
+	switch (ls) {
+	case ld: 
+	    dm_addr`ID` = ag1q`ID`;
+	    rr`E1` = dm_read`E1` = DM[dm_addr`ID`]`ID`;
+	case st:
+	    stage ID:
+		dm_addr_pipe = ag1q;
+	    stage E1:
+		dm_addr = dm_addr_pipe;
+	        DM[dm_addr] = dm_write = rr;
+	}
+
+    }
+    syntax : ls " " rr ",dm(sp" dec offs ")" ;
+    image  : ls::offs[one 7..0]::rr, class(sp_indexed);
+}
+
+
+// load/store instructions with linear address manipulations
+
+enum ag1_op { indir "", incr "++", decr "--" };
+
+opn ag1_opn(op: ag1_op, r: rrid)
+{
+    action {
+    stage ID:
+	switch (op) {
+	case indir: ag1p = r;
+	case incr:  r = ag1q = add(ag1p=r,ag1m= 1) @ag1;
+	case decr:  r = ag1q = add(ag1p=r,ag1m=-1) @ag1;
+	}
+    }
+    syntax : r op;
+    image  : r::op;
+}
+
+opn load_store_wreg_indirect(op: load_store_op, rr: wreg, ag: ag1_opn)
+{
+    action {
+    stage ID: 
+	ag;
+    stage ID..E1: 
+	switch (op) {
+	case ld:
+	    dm_addr`ID` = ag1p`ID`;
+	    rr`E1` = dm_read`E1` = DM[dm_addr`ID`]`ID`;
+	case st:
+	    stage ID:
+		dm_addr_pipe = ag1p;
+	    stage E1:
+		dm_addr = dm_addr_pipe;
+	        DM[dm_addr] = dm_write = rr;
+	}
+    }
+    syntax : op " " rr ",dm(" ag ")";
+    image  : op::ag::rr;
+}
+
+opn load_store_pm_wreg_indirect(load_pm_wreg_indirect |
+                                store_pm_wreg_indirect);
+
+opn load_pm_wreg_indirect(rr: wreg, ag: ag1_opn)
+{
+    action {
+    stage ID: 
+	ag;
+    stage ID..E1: 
+	pm_addr`ID` = ag1p`ID`;
+	rr`E1` = pm_read`E1` = PM[pm_addr`ID`]`ID`;
+    }
+    syntax : "ld " rr ",pm(" ag ")";
+    image  : "0"::ag::rr, cycles(2);
+}
+
+opn store_pm_wreg_indirect(rr: wreg, ag: ag1_opn)
+{
+    action {
+    stage ID: 
+	ag;
+	pm_addr_pipe = ag1p;
+    stage E1:
+        pm_addr = pm_addr_pipe;
+        PM[pm_addr] = pm_write = rr;
+    }
+    syntax : "st " rr ",pm(" ag ")";
+    image  : "1"::ag::rr, cycles(3);
+}
+
+opn add_sp_word(imm: c16s)
+{
+    action { stage ID: SP = ag1q = add(ag1p=SP,ag1m=imm) @ag1; }
+    syntax : "addw sp, " dec imm;
+    image  : alu_op.unary::"000"::unary_op.addspw::"000"::imm;
+}
+
+opn add_sp_byte(imm: c8s)
+{
+    action { stage ID: SP = ag1q = add(ag1p=SP,ag1m=imm) @ag1; }
+    syntax : "addb sp, " dec imm;
+    image  : imm;
+}

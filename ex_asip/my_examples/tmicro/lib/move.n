@@ -1,0 +1,111 @@
+/*
+-- File : move.n
+--
+-- Contents : nML model for the Tmicro core - register moves.
+--
+-- Copyright (c) 2014-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+
+
+
+opn move_instr(mv_wreg      
+	       | mvi_wreg_word 
+	       | mvi_wreg_byte 
+	       | mvi_im  
+	       | ei     
+	       | di   
+               | mv_dbg_wreg 
+	       | mv_wreg_dbg 
+    )
+{
+    image 
+	: "001"::"00101"::mv_wreg
+	| "001"::"001000001"::mvi_wreg_word
+	| "001"::"1"::mvi_wreg_byte
+	| "001"::"00111"::mvi_im
+	| "001"::"0011000100000"::ei
+	| "001"::"0011000100001"::di
+	| "001"::"001100000"::mv_dbg_wreg 
+	| "001"::"001100001"::mv_wreg_dbg 
+	;
+}
+
+// busses used in register moves and immediate loads.
+
+trn bbus<bool>;        
+trn wbus<word>;        
+
+opn mv_wreg(dst: wreg, src: wreg)
+{
+    action { stage E1: dst = wbus = src; }
+    syntax : "mv " dst "," src;
+    image : dst::src;
+}
+
+opn mvi_wreg_word(rr: wreg, imm: c16s)
+{
+    action { stage E1: rr = wbus = imm; }
+    syntax : "mvi " rr "," imm;
+    image  : rr::imm;
+}
+
+opn mvi_wreg_byte(rr: wreg, imm: c8s)
+{
+    action { stage E1: rr = wbus = imm; }
+    syntax : "mvib " rr "," imm;
+    image  : imm::rr;
+}
+
+opn mvi_im(imm: c8u)
+{
+    action { stage E1: IM = imw = imm; }
+    syntax : "mvi im," imm;
+    image  : imm;
+}
+
+opn ei()
+{
+    action { stage E1: IE = iew = 1; }
+    syntax : "ei";
+}
+
+opn di()
+{
+    action { 
+        stage ID:
+	    diid = 1;
+        stage E1:
+	    die1 = 1;
+	    IE = iew = 0; 
+    }
+    syntax : "di";
+}
+
+opn mv_wreg_dbg(src: wreg)
+{
+    action {
+    stage E1: 
+	ocd_data = wbus = src; 
+    }
+    syntax : "mv dbg," src;
+    image : src;
+}
+
+opn mv_dbg_wreg(dst: wreg)
+{
+    action { 
+    stage E1: 
+	dst = wbus = ocd_data; 
+    }
+    syntax : "mv " dst ",dbg";
+    image : dst;
+}
+

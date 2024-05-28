@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ASCII"?>
+<sdkproject:SdkProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sdkproject="http://www.xilinx.com/sdkproject" name="application" location="/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/application" platform="/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_sw/export/zedboard_sw/zedboard_sw.xpfm" platformUID="xilinx:zedboard:zed:0.1(custom)" systemProject="application_system" sysConfig="zedboard_sw" runtime="C/C++" cpu="standalone_domain" cpuInstance="ps7_cortexa9_0" os="standalone" language="CPP" mssSignature="2c3682613a5df83e77e1ef16448769ce">
+  <configuration name="Debug" id="xilinx.gnu.armv7.exe.debug.607264493" dirty="true">
+    <configBuildOptions xsi:type="sdkproject:SdkOptions"/>
+    <lastBuildOptions xsi:type="sdkproject:SdkOptions"/>
+  </configuration>
+  <configuration name="Release" id="xilinx.gnu.armv7.exe.release.1839251150" dirty="true">
+    <configBuildOptions xsi:type="sdkproject:SdkOptions"/>
+  </configuration>
+  <template appTemplateName="empty_application"/>
+</sdkproject:SdkProject>

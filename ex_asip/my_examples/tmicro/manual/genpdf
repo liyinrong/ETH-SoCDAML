@@ -1,0 +1,8 @@
+#!/bin/sh
+cd html
+
+echo \# Generating tmicro-prince.pdf
+prince -l filelist -o ../tmicro-prince.pdf
+
+echo \# Generating tmicro-wk.pdf
+wkhtmltopdf `cat filelist` ../tmicro-wk.pdf

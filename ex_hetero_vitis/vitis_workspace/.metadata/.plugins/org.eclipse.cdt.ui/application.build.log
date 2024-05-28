@@ -1,0 +1,41 @@
+09:37:20 **** Build of configuration Debug for project application ****
+make all 
+make --no-print-directory pre-build
+a9-linaro-pre-build-step
+ 
+make --no-print-directory main-build
+Building file: ../src/c/c_app.cpp
+Invoking: ARM v7 g++ compiler
+arm-none-eabi-g++ -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/c/c_app.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_sw/export/zedboard_sw/sw/zedboard_sw/standalone_domain/bspinclude/include -MMD -MP -MF"src/c/c_app.d" -MT"src/c/c_app.o" -o "src/c/c_app.o" "../src/c/c_app.cpp"
+../src/c/c_app.cpp:20:13: warning: 'void run_hw(T_hw*, int, uint32_t**, int*)' declared 'static' but never defined [-Wunused-function]
+   20 | static void run_hw(T_hw* inVec, int inlen, uint32_t** outVec, int* outlen);
+      |             ^~~~~~
+Finished building: ../src/c/c_app.cpp
+ 
+Building file: ../src/c/c_processing.cpp
+Invoking: ARM v7 g++ compiler
+arm-none-eabi-g++ -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/c/c_processing.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_sw/export/zedboard_sw/sw/zedboard_sw/standalone_domain/bspinclude/include -MMD -MP -MF"src/c/c_processing.d" -MT"src/c/c_processing.o" -o "src/c/c_processing.o" "../src/c/c_processing.cpp"
+../src/c/c_processing.cpp:94:13: warning: 'void max_arr(T*, int, T*, int*)' defined but not used [-Wunused-function]
+   94 | static void max_arr(T* arr, int arr_len, T* max_val, int* max_idx) {
+      |             ^~~~~~~
+Finished building: ../src/c/c_processing.cpp
+ 
+Building file: ../src/c/hw_processing.cpp
+Invoking: ARM v7 g++ compiler
+arm-none-eabi-g++ -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/c/hw_processing.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_sw/export/zedboard_sw/sw/zedboard_sw/standalone_domain/bspinclude/include -MMD -MP -MF"src/c/hw_processing.d" -MT"src/c/hw_processing.o" -o "src/c/hw_processing.o" "../src/c/hw_processing.cpp"
+Finished building: ../src/c/hw_processing.cpp
+ 
+Building target: application.elf
+Invoking: ARM v7 g++ linker
+arm-none-eabi-g++ -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,../src/lscript.ld -L/scratch/ex_hetero_vitis_soc_12fs24/vitis_workspace/zedboard_sw/export/zedboard_sw/sw/zedboard_sw/standalone_domain/bsplib/lib -o "application.elf"  ./src/c/c_app.o ./src/c/c_processing.o ./src/c/hw_processing.o   -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
+Finished building target: application.elf
+ 
+Invoking: ARM v7 Print Size
+arm-none-eabi-size application.elf  |tee "application.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  62363	 175372	  22712	 260447	  3f95f	application.elf
+Finished building: application.elf.size
+ 
+
+09:37:21 Build Finished (took 844ms)
+

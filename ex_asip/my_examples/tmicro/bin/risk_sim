@@ -1,0 +1,290 @@
+#!/usr/bin/env tct_tclsh
+# -*-Tcl-*-
+#
+# Main script for batch verification with Risk
+#
+# Copyright (c) 2015 Synopsys, Inc.
+# This software and the associated documentation are proprietary to Synopsys, Inc.
+# This software may only be used in accordance with the terms and conditions of a
+# written license agreement with Synopsys, Inc. All other use, reproduction, or
+# distribution of this software is strictly prohibited.
+
+
+package require Tcl 8.6
+
+set bindir [file normalize [file dirname [info script]]]
+source $bindir/common.tcl
+
+
+proc cexec {command {allow_error 0} {sout @stdout} {serr @stderr}} {
+    if {![catch {exec {*}$command >$sout 2>$serr}]} {return 0}
+    if {[string equal [lindex $::errorCode 0] CHILDSTATUS]} {
+        if {$allow_error} {return [lindex $::errorCode 2]}
+        exit 1
+    }
+    puts $::errorInfo
+    exit 1
+}
+
+
+proc do_cover {} {
+    global lib processor files results
+    set iprs {}
+    foreach f $files {
+        if {[lindex $results($f) 0] == 3} {lappend iprs $f.iss.ipr}
+    }
+    cexec [list risk -I$lib -ocoverage.bdd +c {*}$iprs $processor] 0 /dev/null
+}
+
+
+proc read_rcd_cycle {file lookahead} {
+    if {[eof $file]} {return {}}
+    upvar $lookahead la
+    lappend ll $la
+    while {[gets $file la] >= 0
+           && [string is alpha [string index $la 0]]} {
+        lappend ll $la
+    }
+    return [lsort $ll]
+}
+
+
+proc rcdcomp {fname1 fname2 diffname} {
+    set file1 [open $fname1 r]
+    set file2 [open $fname2 r]
+    set dfile [open $diffname w]
+    set nrdiffs 0
+    puts $dfile [format "%20s %20s %20s" ISS common RTL]
+    puts $dfile [format "%20s %20s %20s" --- ------ ---]
+    gets $file1 look1
+    gets $file2 look2
+    if {[regexp "^reset at" $look1]} {gets $file1 look1}
+    if {[regexp "^reset at" $look2]} {gets $file2 look2}
+
+    while 1 {
+        set c1 [concat [read_rcd_cycle $file1 look1] \177]
+        set c2 [concat [read_rcd_cycle $file2 look2] \177]
+        if {[llength $c1]==1 && [llength $c2]==1} {break}
+
+        set i1 0
+        set i2 0
+        while 1 {
+            set s1 [lindex $c1 $i1]
+            set s2 [lindex $c2 $i2]
+            if {[string equal $s1 \177] && [string equal $s2 \177]} {break}
+            set diff [string compare -nocase $s1 $s2]
+            if {!$diff} {
+                puts $dfile [format "%20s %20s %20s" "" $s1 ""]
+                incr i1
+                incr i2
+            } else {
+                incr nrdiffs
+                set l1 [lindex [split $s1 "= "] 0]
+                set l2 [lindex [split $s2 "= "] 0]
+                if {[string equal $l1 $l2]} {
+                    puts $dfile [format "%20s %20s %20s" $s1 ! $s2]
+                    incr i1
+                    incr i2
+                } elseif {$diff<0} {
+                    puts $dfile [format "%20s %20s %20s" $s1 ! ""]
+                    incr i1
+                } else {
+                    puts $dfile [format "%20s %20s %20s" "" ! $s2]
+                    incr i2
+                }
+            }
+        }
+    }
+    puts $dfile "\n   --- Total number of differences: $nrdiffs"
+    close $file1
+    close $file2
+    close $dfile
+    return $nrdiffs
+}
+
+
+proc do_compare {} {
+    global files results
+    foreach f $files {
+        if {[lindex $results($f) 0] != 3} {continue}
+        set nrdiffs [rcdcomp $f.iss.rcd $f.vcs.rcd $f.diff]
+        if {$nrdiffs} {
+            set results($f) "4 $nrdiffs"
+        } else {
+            set results($f) 5
+        }
+    }
+}
+
+
+proc do_darts {} {
+    global lib processor files results
+    foreach f $files {
+        if {$results($f) != 1} {continue}
+        puts $f
+        set cmd [list darts -B -I$lib -E -Cnodeps +Wnojump $f.ras $processor]
+        if {[cexec $cmd 1]} {continue}
+        set results($f) 2
+        set discmd [list darts -B -I$lib -L -d $f.ras.x -o $f.lst $processor]
+        cexec $discmd 1
+    }
+}
+
+
+proc print_results {} {
+    global files results
+    set risk 0; set darts 0; set iss 0; set nok 0; set ok 0
+    set summ [open summary.txt w]
+    foreach f $files {
+        switch [lindex $results($f) 0] {
+            0 { incr risk;  puts $summ "$f    invalid (Risk)" }
+            1 { incr darts; puts $summ "$f    invalid (Darts)" }
+            2 { incr iss;   puts $summ "$f    invalid (ISS)" }
+            4 { incr nok;   puts $summ "$f    ! [lindex $results($f) 1] DIFFS !"}
+            5 { incr ok;    puts $summ "$f    ok" }
+            default { error "invalid result code" }
+        }
+    }
+    puts $summ "\nSummary:"
+    puts $summ "  Total files      :  [llength $files]"
+    puts $summ "  Invalid (Risk)   :  $risk"
+    puts $summ "  Invalid (Darts)  :  $darts"
+    puts $summ "  Invalid (ISS)    :  $iss"
+    puts $summ "  Compared ok      :  $ok"
+    puts $summ "  Compared NOT ok  :  $nok"
+    close $summ
+    return $nok
+}
+
+
+proc run_verification {indir} {
+    global hdl profile files results iss bindir modeldir processor vcsim
+    array unset results
+    foreach f [glob -nocomplain *.\#as] {set results([file rootname $f]) 0}
+    foreach f [glob -nocomplain *.ras]  {set results([file rootname $f]) 1}
+    set files [lsort [array names results]]
+
+    puts "\n*** Assembling (Darts) ***"
+    do_darts
+
+    puts "\n*** Simulating (ISS) ***"
+    write_tmpfile
+    cexec [list $iss -qf -T -t $bindir/iss_risk.tcl]
+    read_tmpfile
+
+    if {$profile} {
+        puts "\n*** Collecting profile information ***"
+        do_cover
+    }
+
+    puts "\n*** Simulating (HDL:$hdl) ***"
+    foreach f $files {
+        if {[lindex $results($f) 0] != 3} {continue}
+        puts stderr $f
+        # Generate testbench input
+        set cmd [list $iss -qf -b $f.ras.x]
+        if {$hdl eq "vlog"} {lappend cmd -fhath}
+        cexec $cmd
+
+        set c [open "cycle_count" w]
+        puts $c [lindex $results($f) 1]
+        close $c
+
+        set cmd [list $vcsim -ucli -quiet -do [file join $bindir rtl_run_vcs_risk.tcl]]
+        cexec $cmd 0 /dev/null
+        file rename -force register.log $f.vcs.rcd
+    }
+
+    puts "\n*** Comparing ISS and HDL output ***"
+    do_compare
+
+    puts "\n*** Writing results to \"[file join $indir summary.txt]\""
+    set nok [print_results]
+    puts "\nDone ($nok tests had diffs)\n"
+    return $nok
+}
+
+
+proc run_risk_and_verification {batchfile} {
+    global profile lib processor
+    set batchdir [file tail $batchfile].work
+    cexec [list mkdir $batchdir]
+
+    puts "******************************************************************"
+    puts "*** Running Risk"
+    puts "******************************************************************"
+    set dirlist {}
+    set bf [open $batchfile r]
+    set lnr 0
+    while {[gets $bf line] >= 0} {
+        incr lnr
+        set l [lindex [split $line \#] 0]
+        if {![llength $l]} {continue}
+        if {[llength $l] != 3
+            || ![regexp {^(n|N)?(\d+)$} [lindex $l 2] nr nN val]} {
+            puts "Can't parse line $lnr in $batchfile:\n$line"
+            exit 1
+        }
+        if {!$val} {continue}
+        if {![string length $nN]} {set nr n$val}
+        set f [lindex $l 0]
+        set t [lindex $l 1]
+        set o $batchdir/$t.$lnr
+        lappend dirlist $t $t.$lnr
+        puts $l
+        cexec [list risk -O$o -I$lib -t$t -$nr -pa $f $processor] 0 /dev/null
+    }
+    close $bf
+
+    cd $batchdir
+    set nok_all 0
+    set covfiles {}
+    set summ [open summary.txt w]
+    foreach {template dir} $dirlist {
+        puts ""
+        puts "******************************************************************"
+        puts "*** Running verification for $template"
+        puts "******************************************************************"
+
+        cd $dir
+        set rr [run_verification $dir]
+        cd ..
+        incr nok_all $rr
+        puts $summ [format "%-20s ==> %5d tests had diffs" $dir $rr]
+        lappend covfiles [file join $dir coverage.bdd]
+    }
+    puts $summ "\nTotal number of tests with diffs: $nok_all"
+    close $summ
+    puts "\n******************************************************************"
+    puts "Finished (total number of tests with diffs: $nok_all)"
+    puts "Check summary.txt files in ./$batchdir for results"
+    if {$profile} {
+        cexec [list risk -I$lib -ocoverage.bdd +c {*}$covfiles $processor] 0 /dev/null
+        puts "Check coverage.bdd files in ./$batchdir for coverage info"
+    }
+}
+
+
+#
+# Main
+#
+set command [file tail $argv0]
+set arg [lindex $argv 0]
+if {$argc != 1} {
+    puts "Usage:"
+    puts "   $command <dir>        Verify a directory generated by Risk";
+    puts "   $command <file>       Run Risk and perform verification";
+    puts ""
+    puts "<file> must contain lines of the following format:"
+    puts "     <risk-file> <template-name> \[n|N\]<number>"
+    puts "where <number> is the number of instances|iterations"
+    exit 1
+}
+if [file isdirectory $arg] {
+    cd $arg
+    run_verification $arg
+} elseif [file isfile $arg] {
+    run_risk_and_verification $arg
+} else {
+    puts "File/directory not found: $arg"
+}

@@ -1,0 +1,137 @@
+# -- File : Makefile.test
+# -- Contents : driver for regression tests.
+# -- Copyright (c) 2014 Synopsys Inc.
+
+# processor name
+P=tzscale
+
+# configuration: Release or Debug
+CFG=Release
+# RTL language: vlog or vhdl
+HDL=vlog
+
+# HDL project name
+H=$(P)_$(HDL)
+
+
+help:
+	@ echo ""
+	@ echo "    Run make as follows in one of the test directories"
+	@ echo ""
+	@ echo "         cd A00_report"
+	@ echo "         make -f ../Makefile.test <target>"
+	@ echo ""
+	@ echo "    where <target> is one of the following"
+	@ echo ""
+	@ echo "         ok        - native execution and saving of the reference results"
+	@ echo "         native    - native execution"
+	@ echo "         chess     - compilation with Chess"
+	@ echo "         run       - simulation of test program in ISS"
+	@ echo "         diff      - check native versus ISS"
+	@ echo "         rtlrun    - RTL simulation of test program"
+	@ echo "         rtldiff   - check ISS versus RTL"
+	@ echo "         clean     - remove intermediate files"
+	@ echo "         virgin    - remove test reports"
+	@ echo ""
+	@ echo "    The following targets also exists in an version for executing tests with "
+	@ echo "    interrupts enabled"
+	@ echo ""
+	@ echo "         ok_irq native_irq chess_irq run_irq diff_irq rtlrun_irq rtldiff_irq "
+	@ echo ""
+	@ echo "    Hint: define following alias"
+	@ echo "         alias mmt 'make -f ../Makefile.test  \!^ '"
+	@ echo "    and execute the tests as follows"
+	@ echo ""
+	@ echo "         cd A00_report"
+	@ echo "         mmt <target>"
+	@ echo ""
+
+test.prx: ../utils/test.prx
+	@ cp ../utils/test.prx .
+
+test_irq.prx: ../utils/test_irq.prx
+	@ cp ../utils/test_irq.prx .
+
+native: test.gcc
+test.gcc: test.prx test.c
+	@ echo "   Compiling and running on host"
+	@ chessmk -C Native test.prx    > gcc.log 2>&1
+	@ chessmk -C Native test.prx -S > test.gcc 
+
+native_irq: test_irq.gcc
+test_irq.gcc: test_irq.prx test.c
+	@ echo "   Compiling and running on host (with interrupts enabled)"
+	@ chessmk -C Native test_irq.prx    > gcc_irq.log 2>&1
+	@ chessmk -C Native test_irq.prx -S > test_irq.gcc
+
+ok: test.ok
+test.ok: test.gcc
+	@ sed "1,2 d" test.gcc > test.ok
+
+ok_irq: test_irq.ok
+test_irq.ok: test_irq.gcc
+	@ sed "1,2 d" test_irq.gcc > test_irq.ok
+
+chess: $(CFG)/test
+$(CFG)/test: test.prx test.c
+	@ echo "   Compiling on target ($(CFG))"
+	@ chessmk -C $(CFG) test.prx > chess.log 2>&1
+
+chess_irq: $(CFG)/test_irq
+$(CFG)/test_irq: test_irq.prx test.c
+	@ echo "   Compiling on target ($(CFG)) (interrupted)"
+	@ chessmk -C $(CFG) test_irq.prx > chess_irq.log 2>&1
+
+run: $(CFG)/test.cycle_count
+test.mem $(CFG)/test.iss.rcd $(CFG)/test.cycle_count: $(CFG)/test
+	@ echo "   Simulating on target ($(CFG))"
+	@ chessmk -C $(CFG) test.prx -S > iss_run.log 2>&1
+	@ echo "   (`cat $(CFG)/test.cycle_count` cycles)"
+
+run_irq: $(CFG)/test_irq.cycle_count
+test_irq.mem $(CFG)/test_irq.iss.rcd $(CFG)/test_irq.cycle_count: $(CFG)/test_irq
+	@ echo "   Simulating on target ($(CFG)) (interrupted)"
+	@ chessmk -C $(CFG) test_irq.prx -S > iss_run_irq.log 2>&1
+	@ echo "   (`cat $(CFG)/test_irq.cycle_count` cycles)"
+
+diff: test.diff
+test.diff: test.gcc test.mem
+	@ echo "   Checking diffs Native versus CHESS"
+	@ regression_compare test dummy_arg > test.diff
+	@ tail -1 test.diff
+
+diff_irq: test_irq.diff
+test_irq.diff: test_irq.gcc test_irq.mem
+	@ echo "   Checking diffs Native versus CHESS (interrupted)"
+	@ regression_compare test_irq dummy_arg > test_irq.diff
+	@ tail -1 test_irq.diff
+
+rtlrun: $(CFG)/test.$(H).rcd
+$(CFG)/test.$(H).rcd: $(CFG)/test.cycle_count
+	@ echo "   Simulating $(HDL) ($(CFG)) (`cat $(CFG)/test.cycle_count` cycles)"
+	@ chessmk -C $(CFG) test.prx -H +E $(H) > rtl_run.$(HDL).log 2>&1
+
+rtlrun_irq: $(CFG)/test_irq.$(H).rcd
+$(CFG)/test_irq.$(H).rcd: $(CFG)/test_irq.cycle_count
+	@ echo "   Simulating $(HDL) ($(CFG)) (interrupted) (`cat $(CFG)/test_irq.cycle_count` cycles)"
+	@ chessmk -C $(CFG) test_irq.prx -H +E $(H) > rtl_run_irq.$(HDL).log 2>&1
+
+rtldiff: test.rtldiff
+test.rtldiff: $(CFG)/test.$(H).rcd # first dependency also produces: $(CFG)/test.iss.rcd
+	@ echo "   Checking diffs iss versus $(HDL) ($(CFG))"
+	@ rcd_compare $(CFG)/test.iss.rcd $(CFG)/test.$(H).rcd > test.rtldiff
+	@ tail -1 test.rtldiff
+
+rtldiff_irq: test_irq.rtldiff
+test_irq.rtldiff: $(CFG)/test_irq.$(H).rcd # first dependency also produces: $(CFG)/test_irq.iss.rcd
+	@ echo "   Checking diffs iss versus $(HDL) ($(CFG)) (interrupted)"
+	@ rcd_compare $(CFG)/test_irq.iss.rcd $(CFG)/test_irq.$(H).rcd > test_irq.rtldiff
+	@ tail -1 test_irq.rtldiff
+
+clean:
+	@ rm -f *diff *.mem *.gcc data.*
+	@ rm -rf Release Native Debug
+
+virgin: clean
+	@ rm -f *.log *.prxui ucli.key .message JTS_PORT_NUMBER
+

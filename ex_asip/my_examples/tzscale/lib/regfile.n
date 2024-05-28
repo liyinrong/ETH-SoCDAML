@@ -1,0 +1,120 @@
+/*
+-- File : regfile.n
+--
+-- Contents : nML model for the Tzscale processor -- main register file access.
+--
+-- Copyright (c) 2015-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+/* On TZSCALE, register field R0 is treated as follows
+   - Reading from R0 results in a zero value.  This behaviour is modeled
+     by assigning 0 to the read transitory in the read_action of the 
+     mR0_dead rule.
+   - Writing to R0 will have no effect.  This is modeled by assigning to 
+     a transitory with property dead_end. 
+*/
+
+trn w1_dead<w32>;
+trn w2_dead<w32>;
+property dead_end: w1_dead, w2_dead;
+
+
+mode mR1(mR1nz | mR1_dead);
+
+/*
+mode mR1_regs(r: c5u) { 
+    read_value   : R[r] read(r1); 
+    write_value  : R[r] write(w1); 
+    syntax       : "x" dec r; 
+    image        : r; 
+}
+*/
+
+mode mR1_dead() { 
+    read_value   : r1;  
+    write_value  : w1_dead; 
+    read_action  { r1 = 0;} 
+//    write_action { w1_dead = w1;}
+    syntax       : "x0"; 
+    image        : "00000";  
+}
+
+mode mR2(mR2nz | mR2_dead);
+
+/*
+mode mR2_regs(r: c5u) { 
+    value        : R[r] read(r2) write(w2); 
+    syntax       : "x" dec r; 
+    image        : r; 
+}
+*/
+
+mode mR2_dead() { 
+    read_value   : r2;  
+    write_value  : w2_dead; 
+    read_action  { r2 = 0;} 
+//    write_action { w2_dead = w2;}
+    syntax       : "x0"; 
+    image        : "00000";  
+}
+
+mode mR1nz(r: c5unz) { 
+    read_value   : R[r] read(r1); 
+    write_value  : R[r] write(w1); 
+    syntax       : "x" dec r; 
+    image        : r; 
+}
+
+mode mR2nz(r: c5unz) { 
+    read_value   : R[r] read(r2); 
+    write_value  : R[r] write(w2); 
+    syntax       : "x" dec r; 
+    image        : r; 
+}
+
+mode mR3(mR3nz | mR3_dead);
+
+mode mR3_dead() {
+    read_value   : r3;
+    write_value  : w1_dead;
+    read_action  { r3 = 0;}
+    syntax       : "x0";
+    image        : "00000";
+}
+
+mode mR3nz(r: c5unz) {
+    read_value   : R[r] read(r3);
+    write_value  : R[r] write(w1);
+    syntax       : "x" dec r;
+    image        : r;
+}
+
+#ifdef ISA_COMPRESSED 
+
+// modes for compact instructions
+
+mode mR1C(r: c3u) { 
+    read_value   : R8_15[r] read(r1); 
+    write_value  : R8_15[r] write(w1); 
+    
+    syntax       : "x" dec $r+8$; 
+    image        : r; 
+}
+
+mode mR2C(r: c3u) { 
+    read_value   : R8_15[r] read(r2); 
+    write_value  : R8_15[r] write(w2); 
+    syntax       : "x" dec $r+8$; 
+    image        : r; 
+}
+
+#endif
+
+hw_init R = others => 0;

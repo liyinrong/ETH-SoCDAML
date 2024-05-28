@@ -1,0 +1,8 @@
+<simulator name="Simulator" processor="tzscale" mode="ia" lib="../lib">
+    <option id="checkers.BreakpointType" value="none"/>
+    <option id="checkers.ColorStorageReadsWrites" value="off"/>
+    <option id="checkers.GenerateDynamicCode" value="on"/>
+    <option id="checkers.HostedClib" value="on"/>
+    <option id="checkers.IssName" value="tzscale_ia"/>
+    <option id="checkers.WorkDir" value="tzscale_ia_work"/>
+</simulator>

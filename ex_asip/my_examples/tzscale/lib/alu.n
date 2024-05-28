@@ -1,0 +1,254 @@
+/*
+-- File : alu.n
+--
+-- Contents : nML model for the Tzscale processor -- ALU instructions.
+--
+-- Copyright (c) 2015-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+ 
+opn alu_instr(alu_rrr | alu_rri | alu_lui);
+
+opn alu_rrr(alu_rrr_ar | alu_rrr_sh | alu_rrr_sub | alu_rrr_sra);
+
+opn alu_rri(alu_rris_ar | alu_rriu_ar | alu_rri_sh | alu_rri_sra);
+
+opn macmul_instr(mul_rrr | mac_rrr);
+
+	 
+fu alu;
+trn aluA<w32>;
+trn aluB<w32>;
+trn aluC<w32>;
+trn aluI<w16>;
+trn aluU<int20p>;
+trn aluM<uint1>;
+trn aluN<uint1>;
+
+fu sh;
+trn shA<w32>;
+trn shB<w32>;
+trn shC<w32>;
+
+fu mpy;
+trn mpyA<w32>;
+trn mpyB<w32>;
+trn mpyC<w32>;
+trn mpyD<w32>;
+
+opn alu_rrr_ar(op: funct3_rrr, rd: mR1, rs1: mR1, rs2: mR2)
+{	
+    action { 
+    stage DE:
+	switch (op) {
+	case add  : aluC = add (aluA=rs1,aluB=rs2) @alu; 
+	case slt  : aluC = slt (aluA=rs1,aluB=rs2) @alu;
+	case sltu : aluC = sltu(aluA=rs1,aluB=rs2) @alu;
+	case xor  : aluC = bxor(aluA=rs1,aluB=rs2) @alu;
+	case or   : aluC = bor (aluA=rs1,aluB=rs2) @alu;
+	case and  : aluC = band(aluA=rs1,aluB=rs2) @alu;	
+	}
+        PD = aluC;
+     stage WB:
+        rd = PD;
+    }
+    syntax : op " " rd "," rs1 "," rs2;
+    image    : funct7_rri.value_0x00::rs2::rs1::op::rd::opc.alu_rrr_e;
+}
+
+opn alu_rrr_sh(op: funct3_rrr, rd: mR1, rs1: mR1, rs2: mR2)
+{	
+    action { 
+    stage DE:
+	switch (op) {
+	case sll  : shC  = sll ( shA=rs1, shB=rs2)  @sh;
+	case srl  : shC  = srl ( shA=rs1, shB=rs2)  @sh;	
+	}
+        PD = shC;
+     stage WB:
+        rd = PD;
+    }
+    syntax : op " " rd "," rs1 "," rs2;
+    image    : funct7_rri.value_0x00::rs2::rs1::op::rd::opc.alu_rrr_e;
+}
+
+opn mul_rrr(op: funct3_mul_div, rd: mR1, rs1: mR1, rs2: mR2)
+{	
+    action { 
+    stage DE:
+	switch (op) {
+	case mul    : mpyC  = mul    (mpyA=rs1,mpyB=rs2) @mpy; 
+	case mulh   : mpyC  = mulh   (mpyA=rs1,mpyB=rs2) @mpy;
+	case mulhsu : mpyC  = mulhsu (mpyA=rs1,mpyB=rs2) @mpy;
+	case mulhu  : mpyC  = mulhu  (mpyA=rs1,mpyB=rs2) @mpy;	
+	}
+        PD = mpyC;
+     stage WB:
+        rd = PD;
+    }
+    syntax : op " " rd "," rs1 "," rs2;
+    image    : funct7_muldiv.mul_div::rs2::rs1::op::rd::opc.mul_div_e;
+}
+
+opn mac_rrr(op: funct7_muldiv, rd: mR3, rs1: mR1, rs2: mR2)
+{
+    action {
+    stage DE:
+    switch (op) {
+        case mac:   mpyC = mac   (mpyA=rs1,mpyB=rs2, mpyD=rd) @mpy;
+        case dotp:  mpyC = dotp  (mpyA=rs1,mpyB=rs2) @mpy;
+        case sdotp: mpyC = sdotp (mpyA=rs1,mpyB=rs2, mpyD=rd) @mpy;
+     }
+     PD = mpyC;
+     stage WB:
+        rd = PD;
+    }
+    syntax   : op " " rd "," rs1 "," rs2;
+    image    : op::rs2::rs1::funct3_mul_div.mul::rd::opc.mul_div_e;
+}
+
+opn alu_rrr_sub(op: funct3_rrr2, rd: mR1, rs1: mR1, rs2: mR2)
+{	
+    action { 
+    stage DE:
+	switch (op) {	
+	case sub  : aluC = sub (aluA=rs1,aluB=rs2) @alu;	
+	}
+        PD = aluC;
+     stage WB:
+        rd = PD;
+    }
+    syntax : op " " rd "," rs1 "," rs2;
+    image    : funct7_rri.value_0x20::rs2::rs1::op::rd::opc.alu_rrr_e;
+}
+
+opn alu_rrr_sra(op: funct3_rrr2, rd: mR1, rs1: mR1, rs2: mR2)
+{	
+    action { 
+    stage DE:
+	switch (op) {
+	case sra  : shC  = sra ( shA=rs1, shB=rs2)  @sh;	
+	}
+        PD = shC;
+     stage WB:
+        rd = PD;
+	
+    }
+    syntax : op " " rd "," rs1 "," rs2;
+    image    : funct7_rri.value_0x20::rs2::rs1::op::rd::opc.alu_rrr_e;
+}
+
+opn alu_rris_ar(op: funct3_rri1, rd: mR1, rs1: mR1, i: c12s)
+{
+    // NOTE sltiu does unsigned compare with sign-extended 12b immediate
+    action { 
+    stage DE:
+	switch (op) {
+	case addi:  aluC  = add(aluA=rs1,aluB=i) @alu;
+	case slti:  aluC  = slt(aluA=rs1,aluB=i) @alu;
+	case xori : aluC = bxor(aluA=rs1,aluB=i) @alu;
+        case andi : aluC = band(aluA=rs1,aluB=i) @alu;
+	case sltiu: aluC = sltu(aluA=rs1,aluB=i) @alu;
+	}
+        PD = aluC;
+     stage WB:
+        rd = PD;
+    }
+    syntax : op " " rd "," rs1 "," i;
+    image  : i::rs1::op::rd::opc.alu_rri_e;
+}
+
+opn alu_rriu_ar(op: funct3_rri1, rd: mR1, rs1: mR1, i: c12u)
+{
+    action { 
+    stage DE:
+	switch (op) {
+	case ori  : aluC = bor (aluA=rs1,aluB=i) @alu;
+	}
+        PD = aluC;
+     stage WB:
+        rd = PD;
+    }
+    syntax : op " " rd "," rs1 "," i;
+    image  : i::rs1::op::rd::opc.alu_rri_e;
+}
+
+
+opn alu_rri_sh(op: funct3_rri21, rd: mR1, rs1: mR1, i: c5u)
+{
+    action { 
+    stage DE:
+	switch (op) {
+	case slli :  shC  = sll ( shA=rs1, shB=i)  @sh;
+	case srli :  shC  = srl ( shA=rs1, shB=i)  @sh;	
+	}
+        PD = shC;
+     stage WB:
+        rd = PD;
+    }
+    syntax : op " " rd "," rs1 "," i;
+    image  : funct7_rri.value_0x00::i::rs1::op::rd::opc.alu_rri_e;
+}
+
+opn alu_rri_sra(op: funct3_rri22, rd: mR1, rs1: mR1, i: c5u)
+{
+    action { 
+    stage DE:
+	switch (op) {
+	case srai :  shC  = sra ( shA=rs1, shB=i)  @sh;	
+	}
+        PD = shC;
+     stage WB:
+        rd = PD;
+    }
+    syntax : op " " rd "," rs1 "," i;
+    image    : funct7_rri.value_0x20::i::rs1::op::rd::opc.alu_rri_e;
+}
+
+opn alu_lui(rd: mR1, i: c20p)
+{
+    action {
+    stage DE:
+	aluC = lui(aluU=i) @alu;
+        PD = aluC;
+     stage WB:
+        rd = PD;
+    }
+    syntax: "lui " rd ", " i;
+    image : i::rd::opc.const_lui_e;
+}
+
+
+//nop
+chess_view () {
+    w1_dead = w1 = aluC = add(aluA=r1=0,aluB=0);
+} ->  {
+    nop();
+}
+
+
+// Pass modes on ALU 
+
+chess_view() { // reg move
+    aluC = bor(aluA,aluB=0);
+} -> {
+    aluC = aluA;
+}
+
+chess_view() { // pass c12u/c12s constant
+    aluC = bor(aluA=0,aluB);
+} -> {
+    aluC = aluB;
+}
+
+chess_view() { 
+    aluC=band(aluA,aluB=0xff); 
+} -> { 
+    aluC=zero_extend_08(aluA); 
+}
+

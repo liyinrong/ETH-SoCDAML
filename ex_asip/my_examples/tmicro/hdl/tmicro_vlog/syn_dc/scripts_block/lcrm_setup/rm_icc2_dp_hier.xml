@@ -1,0 +1,191 @@
+
+<!--
+## HEADER_MSG ============================================================================
+## HEADER_MSG Lynx Compatible Reference Methodology (LCRM) Setup File
+## HEADER_MSG Script: rm_icc2_dp_hier.xml
+## HEADER_MSG Version: M-2016.12-SP4 (July 17, 2017)
+## HEADER_MSG Copyright (C) 2010-2017 Synopsys, Inc. All rights reserved.
+## HEADER_MSG ============================================================================
+## HEADER_MSG DESCRIPTION:
+## HEADER_MSG * Provided to support example execution of the product methodology scripts in
+## HEADER_MSG * the Lynx Design System
+## HEADER_MSG OPEN IN Lynx Runtime Manager Flow Editor"
+## HEADER_MSG ============================================================================
+-->
+<flow name="rm_icc2_dp_hier">
+    <note name="note-1" title="Want a different top flow for this block? &lt;i&gt;click here&lt;/i&gt;" always_show_detail="0">
+        <text>Want to change the top flow for this block?
+
+Either edit this flow or use another flow, including the sample flows included in the 
+scripts_block/lcrm_setup directory.
+
+Use the &quot;Block Flow Manager&quot; to configure a new top flow
+1) Open the &quot;Block Flow Manager&quot; (found as the wrench icon located in toolbar or under &quot;File&quot; menu)
+2) &quot;Add existing flow&quot; and navigate to locate the xml flow file to add 
+    (usually in scripts_block/lcrm_setup)
+3) Set a flow as the &quot;Top Flow&quot; by selecting it and using the icon &quot;Make Selected flow the TopFlow&quot;
+    located on the right pane
+4) Set a &quot;Flow Goal&quot; by selecting the target task from the lower pane and using the
+   right icon &quot;Make selected Task the FlowGoal&quot;
+5) save (which will write the scripts_block/conf/block.xml with your config)</text>
+    </note>
+    <note name="note-2-copy" title="Optional Tasks">
+        <text>These optional tasks are not tied into the flow by default but users can
+explicitly execute them or modify the flow to tie them in with an edge.
+
+The pt_eco_* tasks updates the ICC-II database with eco edits calculated
+by the PT eco task from the PT rm.</text>
+    </note>
+    <note name="note-3" title="ICC II DP Hier"/>
+    <join_task name="all">
+        <step>rm_icc2</step>
+    </join_task>
+    <join_task name="setup">
+        <step>rm_icc2</step>
+        <dst>setup</dst>
+    </join_task>
+    <tool_task name="budgeting">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/budgeting.tcl</script_file>
+        <src>timing_estimation</src>
+        <dst>budgeting</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="create_power">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/create_power.tcl</script_file>
+        <src>placement</src>
+        <dst>create_power</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="export">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/export.tcl</script_file>
+        <dst>export</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="init_dp">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/init_dp.tcl</script_file>
+        <src>split_constraints</src>
+        <dst>init_dp</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="place_io">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/place_io.tcl</script_file>
+        <src>pre_shaping</src>
+        <dst>place_io</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="place_pins">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/place_pins.tcl</script_file>
+        <src>create_power</src>
+        <dst>place_pins</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="placement">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/placement.tcl</script_file>
+        <src>shaping</src>
+        <dst>placement</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="pre_shaping">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/pre_shaping.tcl</script_file>
+        <src>init_dp</src>
+        <dst>pre_shaping</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="pre_timing">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/pre_timing.tcl</script_file>
+        <src>place_pins</src>
+        <dst>pre_timing</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="shaping">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/shaping.tcl</script_file>
+        <src>place_io</src>
+        <dst>shaping</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="split_constraints">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/split_constraints.tcl</script_file>
+        <src>setup</src>
+        <dst>split_constraints</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="timing_estimation">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/timing_estimation.tcl</script_file>
+        <src>pre_timing</src>
+        <dst>timing_estimation</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="view_copy">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/view_copy.tcl</script_file>
+        <dst>view_copy</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="view_in_place">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/view_in_place.tcl</script_file>
+        <dst>view_in_place</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <tool_task name="write_data">
+        <step>rm_icc2</step>
+        <script_file>$SEV(bscript_dir)/rm_icc2_dp_scripts/write_data.tcl</script_file>
+        <src>budgeting</src>
+        <dst>write_data</dst>
+        <tool>icc2</tool>
+    </tool_task>
+    <edges>
+        <edge from="budgeting" to="write_data"/>
+        <edge from="create_power" to="place_pins"/>
+        <edge from="init_dp" to="pre_shaping"/>
+        <edge from="note-2-copy" to="export" points="52,33"/>
+        <edge from="note-2-copy" to="view_copy" points="51,30"/>
+        <edge from="note-2-copy" to="view_in_place" points="51,27"/>
+        <edge from="place_io" to="shaping"/>
+        <edge from="place_pins" to="pre_timing"/>
+        <edge from="placement" to="create_power"/>
+        <edge from="pre_shaping" to="place_io"/>
+        <edge from="pre_timing" to="timing_estimation"/>
+        <edge from="setup" to="split_constraints"/>
+        <edge from="shaping" to="placement"/>
+        <edge from="split_constraints" to="init_dp"/>
+        <edge from="timing_estimation" to="budgeting"/>
+        <edge from="write_data" to="all"/>
+    </edges>
+    <graph grid_width="640" grid_height="640">
+        <node name="note-1" x="250" y="30"/>
+        <node name="note-2-copy" x="520" y="210"/>
+        <node name="note-3" x="380" y="130"/>
+        <node name="all" x="220" y="580"/>
+        <node name="setup" x="220" y="60"/>
+        <node name="budgeting" x="220" y="500"/>
+        <node name="create_power" x="220" y="340"/>
+        <node name="export" x="460" y="330"/>
+        <node name="init_dp" x="220" y="140"/>
+        <node name="place_io" x="220" y="220"/>
+        <node name="place_pins" x="220" y="380"/>
+        <node name="placement" x="220" y="300"/>
+        <node name="pre_shaping" x="220" y="180"/>
+        <node name="pre_timing" x="220" y="420"/>
+        <node name="shaping" x="220" y="260"/>
+        <node name="split_constraints" x="220" y="100"/>
+        <node name="timing_estimation" x="220" y="460"/>
+        <node name="view_copy" x="460" y="300"/>
+        <node name="view_in_place" x="440" y="270"/>
+        <node name="write_data" x="220" y="540"/>
+    </graph>
+</flow>
+
+

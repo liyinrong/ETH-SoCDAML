@@ -1,0 +1,6 @@
+<hdlgenerator name="HDL project" processor="tmicro" lib="../lib">
+    <option id="cpp.define" value="TEST_WAITSTATE" inherit="1"/>
+    <option id="hdl.gcf" value="go_options.cfg"/>
+    <option id="hdl.lang" value="vlog"/>
+    <option id="hdl.outdir" value="tmicro_vlog_wait"/>
+</hdlgenerator>

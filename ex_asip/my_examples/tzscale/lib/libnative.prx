@@ -1,0 +1,6 @@
+<project name="Project" processor="tzscale" lib="">
+    <file type="c" name="tzscale_chess_opns.c" path="isg"/>
+    <file type="c" name="tzscale_chess_types.c" path="isg"/>
+    <option id="project.name" value="libnative.a"/>
+    <option id="project.type" value="arch"/>
+</project>

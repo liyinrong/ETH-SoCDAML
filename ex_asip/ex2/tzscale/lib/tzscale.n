@@ -1,0 +1,159 @@
+/*
+-- File : tzscale.n
+--
+-- Contents : nML model for the tzscale processor.
+--
+-- Copyright (c) 2015-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+#include "tzscale_define.h"
+
+enum stage_names {IF,   // Instruction Fetch
+                  DE,   // Instruction Decode and Execute
+                  WB};  // Writeback
+
+
+// Program memory
+
+def pm_size=2**18;
+def pm_size2=2**17;
+
+mem PMb[pm_size] <uint8,addr> access {};
+
+mem PM[0..pm_size-4,2] <iword,addr> alias PMb align 2 access  {
+    ifetch : pm_rd `1` = PM[pm_addr]`1`;
+#ifdef HAS_OCD 
+    istore : PM[pm_addr] = pm_wr;
+#endif
+};
+
+properties {
+    program_memory: PMb; 
+    unconnected : PM; // accessed in PCU
+}
+
+// Data memory
+
+
+def dm_size=2**DM_SIZE_NBIT;
+
+mem DMb [dm_size,1]<w08,addr> access {
+    ld_dmb: dmb_rd `1` = DMb[dm_addr `0` ] `1`;
+    st_dmb: DMb[dm_addr] = dmb_wr;
+};
+
+mem DMh [dm_size-1,1]<w16,addr> alias DMb align 1 access {
+    ld_dmh: dmh_rd `1` = DMh[dm_addr `0`] `1`;
+    st_dmh: DMh[dm_addr] = dmh_wr;
+};
+
+mem DMw [dm_size-3,1]<w32,addr> alias DMb align 1 access {
+    ld_dmw: dmw_rd `1` = DMw[dm_addr `0`] `1`;
+    st_dmw: DMw[dm_addr] = dmw_wr;
+};
+
+mem DMb_stat [0..2047,1]<w08,addr> alias DMb[0] access {};
+mem DMh_stat [0..2046,1]<w16,addr> alias DMb_stat align 1 access {};
+mem DMw_stat [0..2044,1]<w32,addr> alias DMb_stat align 1 access {};
+
+// Registers
+
+reg R[1..31]<w32,uint5> syntax ("X") read(r1 r2 r3) write(w1 w2 wd);
+
+reg R8_15[8]<w32,uint3> alias R[8];
+
+reg LR <w32> alias R[1] read(lrr) write(lrw);  // link register
+
+reg SP <w32> alias R[2]  read(spr) write(spw);  // stack pointer 
+
+reg PC <w32> read(pcr) write(pcw);            // program counter
+
+properties {
+    program_counter : PC;
+    unconnected     : LR, SP, DMb_stat, DMh_stat, DMw_stat;
+}
+
+pipe PD<w32>; // pipe to designation register
+
+// Constants
+
+cst c3u   <uint3>;
+cst c4u   <uint4>;
+cst c5s   <int5>;
+cst c5u   <uint5>;
+cst c5unz <uint5nz>;
+cst c6s   <int6>;
+cst c16s  <int16>;
+cst c12u  <uint12>;
+cst c12s  <int12>;
+cst c13s2 <int13s2>;
+cst c20p  <uint20p>;
+cst c26s  <int26>;
+cst c20s  <int20>;
+cst c21s2 <int21s2>;
+
+// Properties
+
+properties {
+    endianness      : little;
+    decode_stage    : DE;
+    chess_pc_offset : instructions;
+    control_signals : compact;
+    program_memory_endianness : little;
+}
+
+// start of instruction set grammar
+
+
+// Note: ISA_COMPRESSED is defined in memsize.h
+
+start tzscale;
+#ifdef ISA_COMPRESSED 
+opn tzscale (bit32_instr | bit16_instr
+#ifdef HAS_OCD
+    | swbrk_instr
+#endif
+);
+#else
+opn tzscale (bit32_instr 
+#ifdef HAS_OCD
+    | swbrk_instr
+#endif
+);
+#endif
+
+opn bit32_instr(alu_instr | load_store_instr | control_instr | div_instr | macmul_instr);
+
+#ifdef HAS_OCD
+#if defined(__go__)
+opn always (ocd: ocd_if) { action { ocd; } }
+#endif
+#endif
+
+#include "opcode.n"
+#include "regfile.n"
+#include "alu.n"
+#include "ldst.n"
+#include "control.n"
+#include "div.n"
+#include "hazards.n"
+
+#ifdef ISA_COMPRESSED 
+
+opn bit16_instr_(c0 | c1 | c2);
+opn bit16_instr(b16: bit16_instr_) { action: b16; syntax: b16; image: b16, class(bits16); }
+
+#include "bits16.n"
+
+#endif
+
+
+#ifdef HAS_OCD 
+#include "ocd_if.n"
+#endif

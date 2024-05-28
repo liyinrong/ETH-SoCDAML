@@ -1,0 +1,63 @@
+timestamp=[2024-05-21 06:55:37], mode=WORKBENCH_START, duration=0:00:12.434, duration_ms=12434, data={}
+timestamp=[2024-05-21 06:55:38], mode=WORKBENCH_UI_INIT, duration=0:00:01.081, duration_ms=1081, data={editors_count=0, platform_editors_count=0, projects_count=0, platform_projects_count=0, active_platform_editor=false, projects=}
+timestamp=[2024-05-21 06:55:39], mode=PLATFORM_REPOSITORY_INIT, duration=0:00:01.507, duration_ms=1507, data={}
+timestamp=[2024-05-21 06:58:02], mode=PLATFORM_CREATION, duration=0:00:10.401, duration_ms=10401, data={platform_source=dsa, os=standalone, processor=ps7_cortexa9, platform=null}
+timestamp=[2024-05-21 06:58:52], mode=PLATFORM_GENERATION, duration=0:00:26.661, duration_ms=26661, data={name=zedboard_basic}
+timestamp=[2024-05-21 07:00:12], mode=PLATFORM_CREATION, duration=0:00:13.157, duration_ms=13157, data={platform_source=dsa, os=standalone, processor=ps7_cortexa9, platform=null}
+timestamp=[2024-05-21 07:00:42], mode=PLATFORM_GENERATION, duration=0:00:20.863, duration_ms=20863, data={name=zedboard_sw}
+timestamp=[2024-05-21 07:08:02], mode=APP_CREATION, duration=0:00:08.496, duration_ms=8496, data={name=application, project_type=sdk, os=standalone, processor=cortex-a9, runtime=C/C++, platform=zedboard_sw, application_type=application}
+timestamp=[2024-05-21 07:09:49], mode=BUILD, duration=0:00:01.136, duration_ms=1136, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 07:27:58], mode=APP_CREATION, duration=0:00:00.128, duration_ms=128, data={name=filt_bp_hw, project_type=sdk, os=NA, processor=Unknown, runtime=OpenCL, platform=zedboard_basic, application_type=null}
+timestamp=[2024-05-21 07:41:01], mode=BUILD, duration=0:01:12.204, duration_ms=72204, data={name=filt_bp_hw, configuration=Hardware, clean_build=false}
+timestamp=[2024-05-21 07:49:37], mode=BUILD, duration=0:08:35.795, duration_ms=515795, data={name=filt_bp_hw_system_hw_link, configuration=Hardware, clean_build=false}
+timestamp=[2024-05-21 07:55:50], mode=PLATFORM_GENERATION, duration=0:00:19.369, duration_ms=19369, data={name=zedboard_sw}
+timestamp=[2024-05-21 07:56:05], mode=PLATFORM_GENERATION, duration=0:00:08.003, duration_ms=8003, data={name=zedboard_sw}
+timestamp=[2024-05-21 07:56:05], mode=BUILD, duration=0:00:00.119, duration_ms=119, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 07:56:41], mode=PLATFORM_GENERATION, duration=0:00:36.042, duration_ms=36042, data={name=zedboard_sw}
+timestamp=[2024-05-21 07:56:45], mode=BUILD, duration=0:00:01.238, duration_ms=1238, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 07:58:16], mode=PLATFORM_GENERATION, duration=0:00:10.151, duration_ms=10151, data={name=zedboard_sw}
+timestamp=[2024-05-21 07:58:16], mode=BUILD, duration=0:00:00.117, duration_ms=117, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 07:58:52], mode=PLATFORM_GENERATION, duration=0:00:32.878, duration_ms=32878, data={name=zedboard_sw}
+timestamp=[2024-05-21 07:58:55], mode=BUILD, duration=0:00:00.921, duration_ms=921, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:01:52], mode=PLATFORM_GENERATION, duration=0:00:08.645, duration_ms=8645, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:02:08], mode=PLATFORM_GENERATION, duration=0:00:06.236, duration_ms=6236, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:02:08], mode=BUILD, duration=0:00:00.119, duration_ms=119, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 08:02:17], mode=PLATFORM_GENERATION, duration=0:00:06.283, duration_ms=6283, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:09:48], mode=WORKBENCH_START, duration=0:00:05.964, duration_ms=5964, data={}
+timestamp=[2024-05-21 08:09:49], mode=WORKBENCH_UI_INIT, duration=0:00:00.711, duration_ms=711, data={editors_count=10, platform_editors_count=2, projects_count=8, platform_projects_count=2, active_platform_editor=false, projects=RemoteSystemsTempFiles,application,application_system,filt_bp_hw,filt_bp_hw_system,filt_bp_hw_system_hw_link,zedboard_basic,zedboard_sw}
+timestamp=[2024-05-21 08:09:50], mode=PLATFORM_REPOSITORY_INIT, duration=0:00:01.009, duration_ms=1009, data={}
+timestamp=[2024-05-21 08:11:01], mode=PLATFORM_GENERATION, duration=0:00:32.333, duration_ms=32333, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:11:17], mode=PLATFORM_GENERATION, duration=0:00:06.391, duration_ms=6391, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:11:17], mode=BUILD, duration=0:00:00.120, duration_ms=120, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 08:12:02], mode=PLATFORM_GENERATION, duration=0:00:05.858, duration_ms=5858, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:12:02], mode=BUILD, duration=0:00:00.117, duration_ms=117, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 08:12:32], mode=PLATFORM_GENERATION, duration=0:00:24.567, duration_ms=24567, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:12:43], mode=PLATFORM_GENERATION, duration=0:00:06.488, duration_ms=6488, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:12:43], mode=BUILD, duration=0:00:00.115, duration_ms=115, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 08:13:11], mode=PLATFORM_GENERATION, duration=0:00:24.224, duration_ms=24224, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:13:14], mode=BUILD, duration=0:00:00.880, duration_ms=880, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:14:37], mode=PLATFORM_GENERATION, duration=0:00:06.896, duration_ms=6896, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:14:37], mode=BUILD, duration=0:00:00.117, duration_ms=117, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 08:15:03], mode=PLATFORM_GENERATION, duration=0:00:23.060, duration_ms=23060, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:15:06], mode=BUILD, duration=0:00:00.830, duration_ms=830, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:25:05], mode=PLATFORM_GENERATION, duration=0:00:06.689, duration_ms=6689, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:25:05], mode=BUILD, duration=0:00:00.118, duration_ms=118, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 08:25:30], mode=PLATFORM_GENERATION, duration=0:00:22.312, duration_ms=22312, data={name=zedboard_sw}
+timestamp=[2024-05-21 08:25:33], mode=BUILD, duration=0:00:00.712, duration_ms=712, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:27:48], mode=BUILD, duration=0:00:00.321, duration_ms=321, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:29:19], mode=BUILD, duration=0:00:00.321, duration_ms=321, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:29:57], mode=BUILD, duration=0:00:00.281, duration_ms=281, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:30:27], mode=BUILD, duration=0:00:00.321, duration_ms=321, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:31:14], mode=BUILD, duration=0:00:00.271, duration_ms=271, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 08:31:37], mode=BUILD, duration=0:00:00.422, duration_ms=422, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 09:20:50], mode=BUILD, duration=0:01:01.507, duration_ms=61507, data={name=filt_bp_hw, configuration=Hardware, clean_build=false}
+timestamp=[2024-05-21 09:29:08], mode=BUILD, duration=0:08:18.282, duration_ms=498282, data={name=filt_bp_hw_system_hw_link, configuration=Hardware, clean_build=false}
+timestamp=[2024-05-21 09:32:42], mode=PLATFORM_GENERATION, duration=0:00:06.771, duration_ms=6771, data={name=zedboard_sw}
+timestamp=[2024-05-21 09:32:42], mode=BUILD, duration=0:00:00.132, duration_ms=132, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 09:33:10], mode=PLATFORM_GENERATION, duration=0:00:24.726, duration_ms=24726, data={name=zedboard_sw}
+timestamp=[2024-05-21 09:33:12], mode=BUILD, duration=0:00:00.847, duration_ms=847, data={name=application, configuration=Debug, clean_build=false}
+timestamp=[2024-05-21 09:36:34], mode=PLATFORM_GENERATION, duration=0:00:14.034, duration_ms=14034, data={name=zedboard_sw}
+timestamp=[2024-05-21 09:36:47], mode=PLATFORM_GENERATION, duration=0:00:06.213, duration_ms=6213, data={name=zedboard_sw}
+timestamp=[2024-05-21 09:36:47], mode=BUILD, duration=0:00:00.136, duration_ms=136, data={name=application, configuration=Debug, clean_build=true}
+timestamp=[2024-05-21 09:37:19], mode=PLATFORM_GENERATION, duration=0:00:29.642, duration_ms=29642, data={name=zedboard_sw}
+timestamp=[2024-05-21 09:37:21], mode=BUILD, duration=0:00:00.848, duration_ms=848, data={name=application, configuration=Debug, clean_build=false}

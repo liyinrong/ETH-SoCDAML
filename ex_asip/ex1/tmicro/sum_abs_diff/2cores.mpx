@@ -1,0 +1,37 @@
+<mproject>
+    <mpconfig name="Default" mode="tcl" async="1" attach="0">
+        <iss host="localhost" port="5456" cmd="../iss/tmicro_ca" args="{-t 2cores.tcl}"/>
+    </mpconfig>
+    <prj id="0" prx="sort.prx" core="a" cfg="" dcfg=""/>
+    <prj id="1" prx="sort.prx" core="b" cfg="" dcfg=""/>
+    <active mpcfg="Default"/>
+    <zlayout>
+        <perspective type="mainsim">
+            <ViewBookNode>
+                <window name="::MpWindow" visible="1" select="0"/>
+                <window name="::YpWindow0" visible="1" select="1"/>
+                <window name="::YpWindow1" visible="1" select="0"/>
+            </ViewBookNode>
+        </perspective>
+        <perspective type="mpsim">
+            <ViewBookNode>
+                <window name="::SetupView" visible="1" select="1"/>
+                <window name="::ConsoleView" visible="1" select="0"/>
+            </ViewBookNode>
+        </perspective>
+        <perspective type="maindev">
+            <ViewBookNode>
+                <window name="::MpWindow" visible="1" select="1"/>
+                <window name="::YpWindow0" visible="1" select="0"/>
+                <window name="::YpWindow1" visible="1" select="0"/>
+            </ViewBookNode>
+        </perspective>
+        <perspective type="mpdev">
+            <ViewBookNode>
+                <window name="::SetupView" visible="1" select="1"/>
+                <window name="::ConsoleView" visible="1" select="0"/>
+            </ViewBookNode>
+        </perspective>
+    </zlayout>
+</mproject>
+

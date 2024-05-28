@@ -1,0 +1,143 @@
+/*
+-- File : control.n
+--
+-- Contents : nML model for the Tzscale processor -- control instructions.
+--
+-- Copyright (c) 2015-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+opn control_instr(br_instr | jal_instr | jalr_instr /*| nop_instr*/
+#ifdef __chess__
+                  | br_instr_far
+#endif                  
+    );
+
+trn cnd<bool>;
+trn of21<int21s2>;
+trn of21_cd<int21s2>;
+trn trgt<w32>;
+trn lnk<w32>;
+
+fu eq;   // test beqz or bnez
+trn eqA<w32>;
+trn eqB<w32>;
+trn eqC<w32>;
+
+fu pca;
+trn pcaA<w32>;
+trn pcaB<w32>;
+trn pcaC<w32>;
+
+
+opn br_instr(op: funct3_bnch, rs2: mR2, rs1: mR1, i: c13s2, op2: opc)
+{
+    action {
+    stage DE:
+        if (op2 : ctrl_bnch_e )
+        {
+            switch (op) {
+            case beq:  cnd = eq(eqA=rs1,eqB=rs2) @eq; 
+            case bne:  cnd = ne(eqA=rs1,eqB=rs2) @eq;
+            case blt:  cnd = lt(eqA=rs1,eqB=rs2) @eq; 
+            case bge:  cnd = ge(eqA=rs1,eqB=rs2) @eq;
+            case bltu: cnd = ltu(eqA=rs1,eqB=rs2)@eq; 
+            case bgeu: cnd = geu(eqA=rs1,eqB=rs2)@eq;
+            }
+            br(cnd,of21_cd=i);
+        }
+    }
+    syntax : op " " rs1 "," rs2 "," i;
+    dummy_syntax : op2;
+    
+    image  : i[12]::i[10..5]::rs2::rs1::op::i[4..1 zero]::i[11]::op2,
+             cycles(2|1), chess_pc_offset(1), class(ctrl);
+}
+
+#ifdef __chess__
+opn br_instr_far(op: funct3_bnch_compl, rs2: mR2, rs1: mR1, i: c21s2)
+{
+    action {
+    stage DE:
+	switch (op) {
+            case beq:  cnd = eq(eqA=rs1,eqB=rs2) @eq; 
+            case bne:  cnd = ne(eqA=rs1,eqB=rs2) @eq;
+            case blt:  cnd = lt(eqA=rs1,eqB=rs2) @eq; 
+            case bge:  cnd = ge(eqA=rs1,eqB=rs2) @eq;
+            case bltu: cnd = ltu(eqA=rs1,eqB=rs2)@eq; 
+            case bgeu: cnd = geu(eqA=rs1,eqB=rs2)@eq;
+	}
+	br(cnd,of21_cd=i);
+    }
+    syntax : op " " rs1 "," rs2 "," i "chess_only";
+    image  :       
+            // jal_instr writing to R[0]  
+            i[20]::i[10..1 zero]::i[11]::i[19..12]::"00000"::opc.jump_jal_e::
+            // branch + 2 (jumping over 32-bit jal_instr)
+            "0"::"000000"::rs2::rs1::op::"0010"::"0"::opc.ctrl_bnch_e::"1111111100000000",
+            
+            cycles(3|2), chess_pc_offset(1), class(ctrl),
+               class(chess_artificial_prefix_word);
+
+}
+#endif
+
+opn jal_instr(rd: mR1, i: c21s2) 
+{
+    action { 
+    stage DE: 
+	PD = lnk = jal(of21=i); 
+    stage WB:
+        rd = PD;
+    }
+    syntax : "jal " rd ", " dec i;
+    image  : i[20]::i[10..1 zero]::i[11]::i[19..12]::rd::opc.jump_jal_e, 
+             cycles(2), chess_pc_offset(1), class(ctrl);
+}
+
+// A JAL with destination register R0 is a plain jump instruction 
+
+chess_view () {
+    w1_dead = lnk = jal(of21);
+} -> {
+    j(of21);
+}
+
+trn jalr_addr<w32>;
+
+opn jalr_instr(rd: mR1, rs1: mR1, i: c12s) 
+{
+    action { 
+    stage DE:
+        aluC = add(aluA=rs1,aluB=i) @alu; 
+	PD = lnk = jalr(trgt=aluC);
+    stage WB:
+        rd = PD;
+    }
+    syntax : "jalr " rd ", " rs1 ", " dec i;
+    image  : i::rs1::"000"::rd::opc.jump_jalr_e,
+             cycles(2), class(ctrl); 
+}
+
+// A JALR with destination register R0 is a plain indirect jump instruction 
+
+chess_view () {
+    aluC = add(aluA,aluB = 0) @alu;
+    w1_dead = lnk = jalr(trgt=aluC);
+} -> {
+    jr(trgt=aluA);
+}
+
+/*opn nop_instr() 
+{
+    action { stage DE: nop(); }  
+    syntax : "nop";
+    image  : "110100"::"00000"::"00000"::"00000"::"00000000000";
+}*/
+

@@ -1,0 +1,88 @@
+/*
+-- File : ocd.n
+--
+-- Contents : nML model for the Tzscale processor - On Chip Debug interface.
+--
+-- Copyright (c) 2014-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+
+
+reg ocd_addr<addr> read(ocd_addr_r) write(ocd_addr_w);
+reg ocd_data<w08>;
+reg ocd_instr<iword>;
+trn ocd_instr_r<iword>;
+property unconnected : ocd_instr_r;
+
+trn ocd_ld_DMb<bool>; hw_init ocd_ld_DMb = 0;
+trn ocd_st_DMb<bool>; hw_init ocd_st_DMb = 0;
+
+trn ocd_ld_PMb<bool>; hw_init ocd_ld_PMb = 0;
+trn ocd_st_PMb<bool>; hw_init ocd_st_PMb = 0;
+
+fu ocd_addr_incr;
+
+trn ocd_swbreak<uint1>;  hw_init ocd_swbreak = 0;
+
+trn ocd_req<uint1>;  hw_init ocd_req = 0;
+trn ocd_exe<uint1>;  hw_init ocd_exe = 0;
+
+properties {
+    ocd_address_register        : ocd_addr;
+    ocd_data_register           : ocd_data;
+    ocd_instruction_register    : ocd_instr;
+    ocd_request                 : ocd_req;
+    ocd_execute_instruction     : ocd_exe;
+    ocd_swbreak                 : ocd_swbreak;
+}
+
+#if defined(__go__)
+opn ocd_if()
+{
+    action{
+     // DMb debug moves 
+        stage DE..WB:
+        guard (ocd_ld_DMb`DE`){
+        stage DE:
+            ocd_addr = ocd_addr_w = incr1(ocd_addr_r=ocd_addr) @ocd_addr_incr;
+        stage DE..WB:
+            ocd_data`WB` = dmb_rd = DMb[dm_addr`DE`=ocd_addr_r`DE`]`WB`;
+        }
+        stage DE:
+        guard (ocd_st_DMb){
+            ocd_addr = ocd_addr_w = incr1(ocd_addr_r=ocd_addr) @ocd_addr_incr;
+            DMb[dm_addr=ocd_addr_r] = dmb_wr = ocd_data;
+        }
+
+     // PM debug moves 
+        stage DE..WB:
+        guard (ocd_ld_PMb`DE`){
+        stage DE:
+            ocd_addr = ocd_addr_w = incr4(ocd_addr_r=ocd_addr) @ocd_addr_incr;
+        stage DE..WB:
+            ocd_instr `WB` = pm_rd`WB` = PM[pm_addr`DE`=ocd_addr_r`DE`]`WB`;
+        }
+        stage DE:
+        guard (ocd_st_PMb){
+            ocd_addr = ocd_addr_w = incr4(ocd_addr_r=ocd_addr) @ocd_addr_incr;
+            PM[pm_addr=ocd_addr_r] = pm_wr = ocd_instr;
+        }
+    }
+}
+#endif
+opn swbrk_instr() {
+    action { stage DE: ocd_swbreak = 1; }
+    syntax : "swbrk";
+#ifdef ISA_COMPRESSED 
+    image  : "0000000000010000",cycles(2);
+#else
+    image  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0",cycles(2);
+#endif
+}

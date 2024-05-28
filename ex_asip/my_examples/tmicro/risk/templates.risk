@@ -1,0 +1,337 @@
+/*
+-- File : simple.risk
+--
+-- Contents : simple Risk templates for Tmicro core
+--
+-- Copyright (c) 2014-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+
+
+
+#include "generators.risk"
+#include "macros.risk"
+
+
+template arith1 {
+    parameters {
+        $t = uint3:default;
+        $r = uint3:default;
+        $s = uint3:default;
+    }
+
+    text @ PM.0 {
+        mvi_wreg_word(r_reg($r), word:arand);
+        mvi_wreg_word(r_reg($s), word:arand);
+
+        alu_rrr(:, $t, $r, $s);
+        alu_rr(:, $t, $r);
+        compare_rr(:, $r, $s);
+        equal_rr(:, $r, $s);
+        shift_rrr(:, $t, $r, $s);
+        mul_rr(:, $r, $s);
+
+        NOPSTOP
+    }
+}
+
+template arith2 {
+    text @ PM.0 {
+        INIT_R_REGS
+
+        repeat 20 { tmicro:arith; }
+
+        NOPSTOP
+    }
+}
+
+template move {
+    text @ PM.0 {
+        repeat 50 { move_instr:wreg_only; }
+
+        NOPSTOP
+    }
+}
+
+template ldst {
+    parameters{
+        $offs = nint9:arand;
+        $r = uint3:default;
+        $w = wreg:not_sp_or_sr;
+    }
+
+    constraints {
+        $w != wreg.r_reg($r);
+    }
+
+    data @ DM:DM_lim_range {
+        // fill up region around $q : ($q-128 .. $q +127) + a bit more
+        repeat 150 { :default; }
+        $end;  // label ref in data section
+        $offs; // parameter ref in data section
+$q:     repeat 150 { :default; }
+$end:
+    }
+    constraints {
+        $end <= 8192;
+    }
+
+    text @ PM.0 {
+        INIT_REGS
+        mvi_wreg_word(sp_reg, $q);
+
+        load_store_wreg_sp_indexed(ld, :not_sp_or_sr, :arand);
+        load_store_wreg_sp_indexed(st, :not_sp_or_sr, :arand);
+        nop;
+        load_store_wreg_sp_indexed(ld, :not_sp_or_sr, :arand);
+        load_store_wreg_sp_indexed(st, :not_sp_or_sr, :arand);
+
+        load_store_wreg_sp_indexed(st, :not_sp_or_sr, $offs);
+        nop;
+        load_store_wreg_sp_indexed(ld, :not_sp_or_sr, $offs);
+        load_store_wreg_sp_indexed(:, :not_sp_or_sr, :arand);
+        nop;
+        load_store_wreg_sp_indexed(ld, :not_sp_or_sr, $offs);
+
+        add_sp_word(word.sbyte:arand);
+        load_store_wreg_sp_indexed(ld, :not_sp_or_sr, -13);
+        load_store_wreg_sp_indexed(ld, :not_sp_or_sr, -2);
+
+        load_store_wreg_sp_indexed(st, sp_reg, -7);  // sp !!
+        nop;
+        load_store_wreg_sp_indexed(ld, sp_reg, -10); // sp !!
+
+        mvi_wreg_word(sp_reg, $q); // must reset sp now
+        add_sp_byte(sbyte:arand);
+        load_store_wreg_sp_indexed(st, :not_sp_or_sr, -1);
+        nop;
+        load_store_wreg_sp_indexed(:, :not_sp_or_sr, -17);
+        nop;
+        load_store_wreg_sp_indexed(ld, :not_sp_or_sr, -8);
+        load_store_wreg_sp_indexed(ld, :not_sp_or_sr, -22);
+
+
+        mvi_wreg_word(r_reg($r), $q);
+        repeat 10 { load_store_wreg_indirect(ld, $w, (:, $r)); }
+        load_store_wreg_indirect(st, $w, (:, $r));
+        load_store_wreg_indirect(st, $w, (:, $r));
+
+        load_store_wreg_indirect(st, r_reg($r), (:, $r));
+        nop;
+        // following line causes conflict (reported by darts -C)
+        load_store_wreg_indirect(ld, r_reg($r), (:, $r));
+
+        NOPSTOP
+    }
+}
+
+template jump {
+    parameters {
+        $start = addr:PM_lim_range;
+    }
+
+    text @ PM.0 {
+        INIT_REGS
+        j($start);
+    }
+
+    text @ PM.$start {
+        jr($there1);
+        tmicro:arith; // not executed
+$here1: tmicro:arith;
+        jrd($there2);
+        tmicro:arith; // delay slot
+$here2: tmicro:arith;
+
+        jr($l3);
+$l2:    repeat :f0t3 { tmicro:normal; }
+        jrd($l4);
+        tmicro:arith; // delay slot (tmicro:normal can be 2-word)
+$l3:    jr($l2);
+$l4:    jrd($l5);
+        tmicro:arith; // delay slot
+$l5:    tmicro:arith;
+        jrd($l6);
+        tmicro:arith; // delay slot
+$l6:    repeat :f0t3 { tmicro:normal; }
+        jr($l7);
+        tmicro:default; // not executed (may cause darts errors)
+        tmicro:default; // not executed (may cause darts errors)
+$l7:    repeat :f0t3 { tmicro:normal; }
+        jr($l8);
+$l8:    repeat :f0t3 { tmicro:normal; }
+        j($l9);
+$l9:    repeat :f0t3 { tmicro:normal; }
+        j($l11);
+        tmicro:default; // not executed (may cause darts errors)
+$l10:   repeat :f0t3 { tmicro:normal; }
+        jr($l12);
+$l11:   j($l10);
+$l12:   repeat 3 { tmicro:normal; }
+
+        NOPSTOP
+    }
+
+    text @ PM. $start + 1 + sbyte:reljmp { // extreme positions are biased
+$there1:
+        tmicro:arith;
+        jr($here1);
+        tmicro:arith;
+$there2:
+        tmicro:arith;
+        jrd($here2);
+        tmicro:arith;  // delay slot
+$end:
+    }
+    constraints {
+        $end <= 2048;
+    }
+}
+
+template call {
+    parameters {
+        $r = uint3:default;
+    }
+    text @ PM.0 {
+        INIT_REGS
+
+        cl($sub1);
+        cl($sub2);
+        mvi_wreg_word(r_reg($r), $sub1);
+        clid($r);
+        tmicro:arith; // delay slot
+        tmicro:arith; // delay slot
+        mvi_wreg_word(r_reg($r), $sub2);
+        clid($r);
+        tmicro:arith; // delay slot
+        tmicro:arith; // delay slot
+
+        NOPSTOP
+    }
+
+    text @ PM:PM_lim_range {
+$sub1:  repeat :f0t3 { tmicro:arith; }
+        ret;
+        nop; nop; nop;
+
+$sub2:  repeat :f0t3 { tmicro:arith; }
+        mv_wreg(sp_reg, lr_reg); // save LR
+        repeat :f0t3 { tmicro:arith; }
+        cl($sub1);
+        repeat :f0t3 { tmicro:arith; }
+        mv_wreg(lr_reg, sp_reg);  // reload saved LR
+        repeat :f1t3 { tmicro:arith; }
+        ret;
+        nop; nop; nop;
+$end:
+    }
+    constraints {
+        $end <= 2048;
+    }
+}
+
+template doloop {
+    parameters {
+        $r = uint3:default;
+    }
+
+    text @ PM.0 {
+        INIT_REGS
+        mvi_wreg_word(sr_reg, 0); // make sure loop flag is 0
+        j($start);
+    }
+
+    text @ PM:PM_lim_range {
+        // 2 consecutive single-level loops
+$start: doi(:small_loopcount, +($end1-1));
+        repeat :f1t9 { tmicro:normal; }
+$end1:
+        doi(:small_loopcount, +($end2-1));
+        repeat :f1t9 { tmicro:normal; }
+$end2:
+
+        // 3-level nested loop
+        mvi_wreg_byte(r_reg($r), sbyte.addr:small_loopcount);
+        do($r, +($end5-1));
+        tmicro:arith; // delay slot (tmicro:normal can be 2-word)
+        repeat :f0t3 { tmicro:normal; }
+        doi(:small_loopcount, +($end4-1));
+        repeat :f0t3 { tmicro:normal; }
+        doi(:small_loopcount, +($end3-1));
+        repeat :f1t3 { tmicro:normal; }
+$end3:  repeat :f1t3 { tmicro:normal; }
+$end4:  repeat :f1t3 { tmicro:normal; }
+$end5:
+
+        NOPSTOP
+$end:
+    }
+    constraints {
+        $end <= 2048;
+    }
+}
+
+template longloop {
+    text @PM.0 {
+        INIT_REGS
+        mvi_wreg_word(sr_reg, 0); // make sure loop flag is 0
+        j($start);
+    }
+    text @ PM:PM_lim_range {
+$start: doi(:special_loopcount, +($end1-1)); // iterator !
+        repeat :f1t3 { tmicro:normal; }
+$end1:
+
+        NOPSTOP
+$end:
+    }
+    constraints {
+        $end <= 2048;
+    }
+}
+
+template swloop {
+    parameters {
+        $f = uint3:f0to5;
+        $g = uint3:f0to5;
+        $h = uint3:f0to5;
+    }
+
+    constraints {
+        $g != $h;
+        $f != $h;
+        $f != $g;
+    }
+
+    text @ PM.0 {
+        INIT_REGS
+
+        // start at -10
+        mvi_wreg_byte(r_reg($f), -10);
+        mvi_wreg_byte(r_reg($g), 1);
+        mvi_wreg_byte(r_reg($h), sbyte.addr:small_loopcount);
+
+$loop1: repeat :f0t3 { mul_rr:; } // mult writes to R6/R7
+        alu_rrr(add, $f, $f, $g) ;
+        compare_rr(:, $f, $h) ;    // random compare instruction
+        jcr($loop1);
+
+        mvi_wreg_byte(r_reg($f), -10);
+        mvi_wreg_byte(r_reg($g), 1);
+        mvi_wreg_byte(r_reg($h), sbyte.addr:small_loopcount);
+
+$loop2: repeat :f0t3 { mul_rr:; } // mult writes to R6/R7
+        alu_rrr(add, $f, $f, $g) ;
+        compare_rr(:, $f, $h) ;    // random compare instruction
+        jc($loop2);
+
+        NOPSTOP
+    }
+}

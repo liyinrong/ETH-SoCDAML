@@ -1,0 +1,6 @@
+<DebugConfigs>
+   <Config name="ISS-tmicro" type="iss" launch="1">
+ 	<core name="tmicro_1" exe="iss/tmicro_ca" />
+	<mode stop_at="_main" load_symbols="0" init_data_sects="1" />
+   </Config>
+</DebugConfigs>

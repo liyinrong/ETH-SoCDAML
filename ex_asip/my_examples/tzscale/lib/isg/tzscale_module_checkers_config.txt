@@ -1,0 +1,25 @@
+ModuleWritesRegister = div R
+ModuleReadsTransitory = div divA divB div_wad
+ModuleWritesTransitory = div div_addr div_busy div_cnt div_new div_wnc
+ModuleReads_process = div divA divB div_wad
+ModuleWrites_process = div div_addr div_busy div_cnt div_new div_wnc
+MulticycleFunctionalUnitOperations = div divC_divs_divA_divB_div_DE divC_divu_divA_divB_div_DE divC_rems_divA_divB_div_DE divC_remu_divA_divB_div_DE
+ModuleLocalStorage = div B PA Q_addr_reg cnt is_div is_neg_div is_neg_rem
+
+ModuleReadsTransitory = dm_in dm0_rd dm1_rd dm_addr dmb_wr dmh_wr dmw_wr ld_dmb ld_dmh ld_dmw st_dmb st_dmh st_dmw
+ModuleWritesTransitory = dm_in dm0_addr dm0_wr dm1_addr dm1_wr dmb_rd dmh_rd dmw_rd ld_dm0 ld_dm1 st_dm0 st_dm1
+ModuleReads_process_result = dm_in dm0_rd dm1_rd
+ModuleWrites_process_result = dm_in dmb_rd dmh_rd dmw_rd
+ModuleReads_process_request = dm_in dm_addr dmb_wr dmh_wr dmw_wr ld_dmb ld_dmh ld_dmw st_dmb st_dmh st_dmw
+ModuleWrites_process_request = dm_in dm0_addr dm0_wr dm1_addr dm1_wr ld_dm0 ld_dm1 st_dm0 st_dm1
+nml_interface = dm_in DMb
+mem_interface = dm_in DM0 DM1
+ModuleLocalStorage = dm_in col_ff ld_dmb_ff ld_dmh_ff ld_dmw_ff
+ModuleDbgAccess = dm_in dbg_access_DMb
+
+
+PDGTypes = uint1_t uint20_t uint32_t uint3_t uint5_t uint64_t uint6_t 
+
+NumberOfPdgModules = 4
+
+NumberOfPrimitveCFiles = 1

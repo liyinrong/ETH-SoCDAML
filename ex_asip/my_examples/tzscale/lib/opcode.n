@@ -1,0 +1,154 @@
+/*
+-- File : opcode.n
+--
+-- Contents : nML model for the Tzscale processor -- OP code enums.
+--
+-- Copyright (c) 2015-2016 Synopsys, Inc. This Synopsys processor model 
+-- captures an ASIP Designer Design Technique. The model and all associated 
+-- documentation are proprietary to Synopsys, Inc. and may only be used 
+-- pursuant to the terms and conditions of a written license agreement with 
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution 
+-- of the Synopsys processor model or the associated  documentation is 
+-- strictly prohibited. 
+*/
+
+
+
+
+
+enum opc {
+    alu_rrr_e    = 0x33,
+    alu_rri_e    = 0x13,
+    mem_ld_e    = 0x03,
+    mem_st_e     = 0x23,
+    ctrl_bnch_e  = 0x63,
+    jump_jal_e   = 0x6f,
+    jump_jalr_e  = 0x67,
+    const_lui_e  = 0x37,
+    const_auipc_e  = 0x17,
+    mul_div_e    = 0x33,
+   
+    seven_bits_force = 0x7F
+    
+};
+
+enum opc16 {
+    c0 = 0x0,
+    c1 = 0x1,
+    c2 = 0x2  
+};
+
+
+enum funct4 {
+    add = 0x0,
+    four_bits_force = 0xF
+};
+
+
+
+enum funct7_muldiv {
+    mul_div = 0x1,
+    mac     = 0x21,
+    dotp    = 0x22,
+    sdotp   = 0x23,
+    seven_bits_force = 0x7F
+};
+
+enum funct7_rri {
+    
+    value_0x00    = 0x0,
+    value_0x20    = 0x20,
+    seven_bits_force = 0x7F
+};
+
+enum funct3_jalr {
+    jalr = 0x0,
+    three_bits_force = 0x7   
+};
+
+enum funct3_rrr {
+    add  = 0x0,
+    sll  = 0x1,
+    slt  = 0x2,
+    sltu = 0x3,
+    xor  = 0x4,
+    srl  = 0x5,
+    or   = 0x6,
+    and  = 0x7   
+};
+
+enum funct3_rrr2 {
+    sub = 0x0,
+    sra = 0x5,
+
+    three_bits_force = 0x7   
+};
+
+enum funct3_rri1 {
+    addi  = 0x0,
+    slti  = 0x2,
+    sltiu = 0x3,
+    xori  = 0x4,
+    ori   = 0x6,
+    andi  = 0x7
+};
+
+enum funct3_rri21 {
+    slli = 0x1,
+    srli = 0x5,
+    
+    three_bits_force = 0x7 
+};
+
+enum funct3_rri22 {
+    srai = 0x5,
+    
+    three_bits_force = 0x7 
+};
+
+enum funct3_lb {
+    lb  = 0x0,
+    lh  = 0x1,
+    lw  = 0x2,
+    lbu = 0x4,
+    lhu = 0x5
+};
+
+enum funct3_sb {
+    sb = 0x0,
+    sh = 0x1,
+    sw = 0x2,
+    
+    three_bits_force = 0x7 
+};
+
+enum funct3_bnch {
+    beq = 0x0,
+    bne = 0x1,
+    blt = 0x4,
+    bge = 0x5,
+    bltu = 0x6,
+    bgeu = 0x7 
+};
+
+enum funct3_bnch_compl {
+    beq = 0x1,
+    bne = 0x0,
+    blt = 0x5,
+    bge = 0x4,
+    bltu = 0x7,
+    bgeu = 0x6 
+};
+
+enum funct3_mul_div {
+    mul    = 0x0,
+    mulh   = 0x1,
+    mulhsu = 0x2,
+    mulhu  = 0x3,
+    div    = 0x4,
+    divu   = 0x5,
+    rem    = 0x6,
+    remu   = 0x7
+};
+
+

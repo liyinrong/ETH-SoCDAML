@@ -1,0 +1,8 @@
+<simulator name="Simulator" processor="tmicro" mode="ca" lib="../lib">
+    <option id="checkers.ExtraCFiles" value="main_dll.c chkapi_c.c" inherit="1"/>
+    <option id="checkers.ExtraHeaders" value="chkapi_c.h" inherit="1"/>
+    <option id="checkers.IssName" value="tmicro_ca_dbg_main"/>
+    <option id="checkers.NoMain" value="on"/>
+    <option id="checkers.NoTclTuiLibs" value="on"/>
+    <option id="checkers.WorkDir" value="tmicro_ca_dbg_main_work"/>
+</simulator>

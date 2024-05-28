@@ -1,0 +1,237 @@
+/*
+-- File : alu.n
+--
+-- Contents : nML model for the Tmicro core - alu instructions.
+--
+-- Copyright (c) 2014-2016 Synopsys, Inc. This Synopsys processor model
+-- captures an ASIP Designer Design Technique. The model and all associated
+-- documentation are proprietary to Synopsys, Inc. and may only be used
+-- pursuant to the terms and conditions of a written license agreement with
+-- Synopsys, Inc.  All other use, reproduction, modification, or distribution
+-- of the Synopsys processor model or the associated  documentation is
+-- strictly prohibited.
+*/
+
+
+
+
+
+opn alu_instr(alu_rrr | shift_rrr | mul_rr | div_r |
+              compare_rr | equal_rr | alu_rr |
+              minmax_rrr | select_rrr)
+{
+    image
+	: "000"::alu_rrr
+        | "000"::shift_rrr
+        | "000"::mul_rr
+        | "000"::div_r
+	| "000"::compare_rr
+	| "000"::equal_rr
+	| "000"::alu_rr
+	| "000"::minmax_rrr
+	| "001"::select_rrr
+	;
+}
+
+
+opn ext_instr(ext_abs_r)
+{
+    image
+    : "110"::ext_abs_r
+    ;
+}
+
+
+enum alu_op { add,       addc,      sub,       subb,
+	      and,       or,        xor,       compare,
+	      asr,       lsr,       lsl,       unary,
+	      mul,       equal,     min,       max};
+
+enum compare_op { lt, ltu, le, leu, gt, gtu, ge, geu };
+
+enum equal_op { eq, ne, final=7 };
+
+enum unary_op { cmpl, xs, addspw=7 };
+
+fu alu;  // 16 bit ALU
+trn alur<word>;
+trn alus<word>;
+trn alut<word>;
+
+opn alu_rrr(op: alu_op, t: rt, r: rr, s: rs)
+{
+    action {
+	stage E1:
+	alur = r;
+	alus = s;
+	switch (op) {
+	case add:    alut = add (alur,alus,CB)    @alu;
+	case addc:   alut = addc(alur,alus,CB,CB) @alu;
+	case sub:    alut = sub (alur,alus,CB)    @alu;
+	case subb:   alut = subb(alur,alus,CB,CB) @alu;
+	case and:    alut = andw(alur,alus)       @alu;
+	case or:     alut = orw (alur,alus)       @alu;
+	case xor:    alut = xorw(alur,alus)       @alu;
+	}
+	t = alut;
+    }
+    syntax : op " " t "," r "," s;
+    image  : op::t::r::s;
+}
+
+opn compare_rr(op: compare_op, r: rr, s: rs)
+{
+    action {
+    stage E1:
+        alur = r;
+        alus = s;
+	switch (op) {
+	case lt:  CND = lts(alur,alus) @alu;
+	case ltu: CND = ltu(alur,alus) @alu;
+	case le:  CND = les(alur,alus) @alu;
+	case leu: CND = leu(alur,alus) @alu;
+	case gt:  CND = gts(alur,alus) @alu;
+	case gtu: CND = gtu(alur,alus) @alu;
+	case ge:  CND = ges(alur,alus) @alu;
+	case geu: CND = geu(alur,alus) @alu;
+	}
+    }
+    syntax : op " " r "," s;
+    image  : alu_op.compare::op::r::s;
+}
+
+opn equal_rr(op: equal_op, r: rr, s: rs)
+{
+    action {
+	stage E1:
+	alur = r;
+	alus = s;
+	switch (op) {
+	case eq:  CND = eq(alur,alus) @alu;
+	case ne:  CND = ne(alur,alus) @alu;
+	}
+    }
+    syntax : op " " r "," s;
+    image  : alu_op.equal::op::r::s;
+}
+
+opn alu_rr(op: unary_op, t: rt, s: rs)
+{
+    action {
+    stage E1:
+        alus = s;
+	switch (op) {
+	case cmpl: alut = complement(alus) @alu;
+	case xs:   alut = extend_sign(alus) @alu;
+	}
+	t = alut;
+    }
+    syntax : op " " t "," s;
+    image  : alu_op.unary::t::op::s;
+}
+
+opn minmax_rrr(op: alu_op, t: rt, r: rr, s: rs)
+{
+    action {
+    stage E1:
+        alur = r;
+        alus = s;
+	switch (op) {
+	case min:    alut = minw(alur,alus)    @alu;
+	case max:    alut = maxw(alur,alus)    @alu;
+	}
+	t = alut;
+    }
+    syntax : op " " t "," r "," s;
+    image  : op::t::r::s;
+}
+
+opn select_rrr(t: rt, r: rr, s: rs)
+{
+    action {
+    stage E1:
+        alur = r;
+	alus = s;
+	alut = select(CND,alur,alus)    @alu;
+	t = alut;
+    }
+    syntax : "sel " t "," r "," s;
+    image  : "0001"::t::r::s;
+}
+
+opn ext_abs_r(t: rt, r: rr)
+{
+    action {
+    stage E1:
+    alur = r;
+    alut = ext_abs(alur) @alu;
+    t = alut;
+    }
+    syntax : "ext_abs " t "," r;
+    image  : "0000"::t::r::"xxx";
+}
+
+fu sh;  // 16 bit shifter
+trn shr<word>;
+trn shf<word>;
+trn sht<word>;
+
+opn shift_rrr(op: alu_op, t: rt, r: rr, s: rs)
+{
+    action {
+    stage E1:
+	shr = r;
+	shf = s;
+	switch (op) {
+	case asr: sht = asr(shr,shf) @sh;
+	case lsr: sht = lsr(shr,shf) @sh;
+	case lsl: sht = lsl(shr,shf) @sh;
+	}
+	t = sht;
+    }
+    syntax : op " " t "," r "," s;
+    image  : op::t::r::s;
+}
+
+
+enum mul_op { mulss, muluu, macl=3, div, final = 7 };
+
+fu mul;  // 16 bit integer multpilier
+trn mulr<word>;
+trn muls<word>;
+trn mulu<word>;
+trn mulv<word>;
+trn mulx<word>;
+trn muly<word>;
+trn mulx_acc<word>;
+trn muly_acc<word>;
+
+property dead_end : muly_acc;
+
+opn mul_rr(op: mul_op, r: rr, s: rs)
+{
+    action {
+    stage E1:
+	mulr = r;
+	muls = s;
+	switch (op) {
+	case mulss: mulss(mulr,muls, PL = mulx, PH = muly)      @mul;
+	case muluu: muluu(mulr,muls, PL = mulx, PH = muly)      @mul;
+	case macl:  mulss(mulr,muls, mulx_acc, muly_acc)        @mul;
+	            PH = muly = add(mulx_acc, mulv = PH)        @mul;
+	}
+    }
+    syntax : op<!macl> " (r6,r7)," r "," s | op<macl> " (r7)," r "," s;
+    image  : alu_op.mul::op::r::s;
+}
+
+opn div_r (r : rr)
+{
+    action {
+    stage E1:
+        divstep(alur=r,mulu=PL,mulv=PH,PL=mulx,PH=muly) @alu;
+    }
+    syntax: "ds (r6,r7)," r;
+    image : alu_op.mul::mul_op.div::r::"xxx";
+}
+

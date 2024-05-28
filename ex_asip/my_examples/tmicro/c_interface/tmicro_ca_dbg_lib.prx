@@ -1,0 +1,17 @@
+<simulator name="Simulator" processor="tmicro" mode="ca" lib="../lib">
+    <option id="checkers.ArgcArgv" value="on"/>
+    <option id="checkers.CycleBasedFileInput" value="on"/>
+    <option id="checkers.ExtraCFiles" value="chkapi_c.c" inherit="0"/>
+    <option id="checkers.FileInputType" value="all"/>
+    <option id="checkers.FileOutputType" value="all"/>
+    <option id="checkers.HostedClib" value="on"/>
+    <option id="checkers.ISSLinkType" value="lib"/>
+    <option id="checkers.IssName" value="tmicro_ca_dbg_lib"/>
+    <option id="checkers.MemoryInterfaceMemories" value="" inherit="0"/>
+    <option id="checkers.MemoryInterfaceType" value="off"/>
+    <option id="checkers.NoMain" value="on"/>
+    <option id="checkers.NoTclTuiLibs" value="on"/>
+    <option id="checkers.Windows_ConsoleApp" value="on"/>
+    <option id="checkers.WorkDir" value="tmicro_ca_dbg_lib_work"/>
+    <option id="pdg.xargs" value="-DDBG_ALL" inherit="1"/>
+</simulator>
