@@ -7,6 +7,6 @@ The repository is structured as follows:
 - `ex_multicore` Multicore exercise
 - `ex_vec` Vector processors exercise
 - `ex_gpu` GPU exercise
-- `ex_hero` Hero Heterogenous SoC Exercise
-- `ex_hetero_vitis` Zynq Heterogenous SoC Exercise
+- `ex_hero` Hero Heterogenous SoC exercise
+- `ex_hetero_vitis` Zynq Heterogenous SoC exercise
 - `ex_asip` ASIP exercise
